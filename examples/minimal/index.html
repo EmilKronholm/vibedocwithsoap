@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Folio example: minimal</title>
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 0; font: 13px system-ui, sans-serif; color: #0f172a; background: #e8eaed; }
+      .layout { display: grid; grid-template-columns: minmax(0, 1fr) 460px; height: 100vh; }
+      .left { overflow: auto; padding: 24px; }
+      aside { overflow: auto; background: #fff; border-left: 1px solid #d5d8dd; display: flex; flex-direction: column; }
+      aside h2 { font-size: 12px; margin: 0; padding: 8px 12px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+      aside h2 button { font: inherit; padding: 2px 8px; }
+      #log { margin: 0; padding: 8px 12px; font: 11px/1.45 ui-monospace, Menlo, Consolas, monospace; white-space: pre-wrap; word-break: break-word; flex: 1; overflow: auto; }
+
+      /* The page. Not part of Folio: a white box with the presentation in it. */
+      #page { width: 640px; max-width: 100%; min-height: 840px; margin: 0 auto; background: #fff; padding: 56px 64px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15); font-family: Georgia, serif; }
+      #page h1 { font-size: 26px; margin: 0 0 10px; }
+      #page h2 { font-size: 16px; margin: 22px 0 6px; color: #1f3d63; }
+      #page p, #page li { line-height: 1.5; margin: 0 0 8px; }
+      #page [contenteditable] { outline: none; border-radius: 2px; }
+      #page [contenteditable]:hover { box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12); }
+      #page [contenteditable]:focus { box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.4); }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <div class="left"><div id="page"></div></div>
+      <aside>
+        <h2>Adapter events (folio:*) <button id="clear">Clear</button></h2>
+        <pre id="log"></pre>
+      </aside>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
