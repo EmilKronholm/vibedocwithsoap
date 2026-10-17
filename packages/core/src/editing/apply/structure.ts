@@ -1,7 +1,7 @@
-import { failed, type EditFailure, type NewElement } from "../../commands";
+import { failed, isFailure, type EditFailure, type NewElement } from "../../commands";
 import { elementAt, elementPath, setUnitText, type ElementPath } from "../../dom";
 import { contentSibling, find } from "./find";
-import { isFailure, type TreeChange } from "./types";
+import type { TreeChange } from "./types";
 
 export function moveElement(root: HTMLElement, command: { path: ElementPath; direction: "up" | "down" }): TreeChange | EditFailure {
   const el = find(root, command.path);

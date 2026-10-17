@@ -49,7 +49,8 @@ export class VersionLog {
 
   record(state: DocumentState, author: Actor, summary?: string): Version {
     const head = this.head();
-    if (head && head.author === "human" && author === "human") return this.#replaceHead(head, state);
+    // A version with a summary was recorded on purpose (initial, restored), so it stays.
+    if (head && head.author === "human" && author === "human" && !head.summary && !summary) return this.#replaceHead(head, state);
 
     const version: Version = {
       id: this.#newId(),

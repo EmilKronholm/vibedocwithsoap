@@ -1,7 +1,7 @@
-import { failed, type EditFailure } from "../../commands";
+import { failed, isFailure, type EditFailure } from "../../commands";
 import { elementPath, holdsOnlyText, setUnitText, unitText, type ElementPath } from "../../dom";
 import { contentSibling, find } from "./find";
-import { isFailure, type TreeChange } from "./types";
+import type { TreeChange } from "./types";
 
 /**
  * Backspace at the start of an element or Delete at its end: joins it with its

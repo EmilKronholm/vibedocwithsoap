@@ -50,7 +50,10 @@ export interface EditFailure {
 
 export type EditResult = EditSuccess | EditFailure;
 
-export const succeeded = (init: Partial<Omit<EditSuccess, "ok">> = {}): EditSuccess => ({
+/** Narrows a value that may be a failure. Works for any value, since only results carry `ok`. */
+export const isFailure = (value: object): value is EditFailure => "ok" in value && (value as { ok: unknown }).ok === false;
+
+export const succeeded =(init: Partial<Omit<EditSuccess, "ok">> = {}): EditSuccess => ({
   ok: true,
   changed: init.changed ?? true,
   notices: init.notices ?? [],

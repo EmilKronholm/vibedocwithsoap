@@ -1,7 +1,7 @@
-import { failed, type EditFailure } from "../../commands";
+import { failed, isFailure, type EditFailure } from "../../commands";
 import { PARAGRAPH_TAGS, elementPath, holdsOnlyText, setUnitText, unitText, type ElementPath } from "../../dom";
 import { find } from "./find";
-import { isFailure, type TreeChange } from "./types";
+import type { TreeChange } from "./types";
 
 /** Enter: the text after `offset` moves into a copy of the element, right below it. */
 export function splitUnit(root: HTMLElement, command: { path: ElementPath; offset: number }): TreeChange | EditFailure {

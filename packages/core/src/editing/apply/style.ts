@@ -1,7 +1,7 @@
-import { failed, type EditFailure } from "../../commands";
+import { failed, isFailure, type EditFailure } from "../../commands";
 import type { ElementPath } from "../../dom";
 import { find } from "./find";
-import { isFailure, type TreeChange } from "./types";
+import type { TreeChange } from "./types";
 
 type Styled = Element & ElementCSSInlineStyle;
 

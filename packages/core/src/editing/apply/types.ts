@@ -20,5 +20,3 @@ export interface Applied {
 }
 
 export type ApplyOutcome = Applied | EditFailure;
-
-export const isFailure = (value: object): value is EditFailure => "ok" in value;

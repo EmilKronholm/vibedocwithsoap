@@ -24,6 +24,7 @@ export {
 export { heading, paragraph, textBox, type TextBoxInit } from "./new-elements";
 export {
   failed,
+  isFailure,
   succeeded,
   type Caret,
   type EditError,
