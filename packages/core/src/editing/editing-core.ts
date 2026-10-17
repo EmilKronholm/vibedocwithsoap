@@ -9,12 +9,16 @@ import {
   type ReadonlyStateModel,
   type Version,
 } from "../model";
+import type { ReviewSnapshot } from "../review";
 import type { DocumentRules } from "../rules";
 import { Emitter } from "../util/emitter";
 import { Committer } from "./committer";
 import type { CommandHandler, EditingContext } from "./context";
+import { AiHandler } from "./handlers/ai-handler";
 import { DocumentHandler } from "./handlers/document-handler";
 import { HistoryHandler } from "./handlers/history-handler";
+import { ReviewHandler } from "./handlers/review-handler";
+import { ReviewStore } from "./review-store";
 import { RuleGate } from "./rule-gate";
 import { StatusMachine } from "./status";
 
@@ -48,8 +52,13 @@ export class EditingCore {
     if (!options.versions?.length && initial.html) versions.record(initial, "human", "Initial document");
 
     this.model = model;
-    this.#context = { model, status: this.status, gate, committer: new Committer(model, writer, history, versions) };
-    this.#handlers = [new DocumentHandler(this.#context), new HistoryHandler(this.#context)];
+    this.#context = { model, status: this.status, gate, review: new ReviewStore(), committer: new Committer(model, writer, history, versions) };
+    this.#handlers = [
+      new DocumentHandler(this.#context),
+      new HistoryHandler(this.#context),
+      new ReviewHandler(this.#context),
+      new AiHandler(this.#context),
+    ];
   }
 
   get rules(): DocumentRules | undefined {
@@ -72,9 +81,18 @@ export class EditingCore {
     return this.#context.committer.versions.list();
   }
 
-  /** Adds a handler for a group of commands. Used to plug in review and the AI. */
-  use(handler: CommandHandler): void {
-    this.#handlers.push(handler);
+  /** The AI revision waiting for the person's decisions, or null. */
+  get review(): ReviewSnapshot | null {
+    return this.#context.review.snapshot();
+  }
+
+  /** The document with the revision's changes marked, to draw while reviewing. Null when nothing is under review. */
+  get reviewHtml(): string | null {
+    return this.#context.review.displayHtml();
+  }
+
+  onReview(listener: (review: ReviewSnapshot | null) => void): () => void {
+    return this.#context.review.onChange(listener);
   }
 
   /** The context handlers work with. */

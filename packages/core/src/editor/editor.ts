@@ -1,7 +1,9 @@
+import { AiCommander, type AiProvider } from "../ai";
 import { isFailure, type Caret, type Command, type EditResult } from "../commands";
 import type { ElementPath } from "../dom";
 import type { EditingCore, EditorStatus } from "../editing";
 import type { Actor, DocumentState, Version } from "../model";
+import type { ReviewSnapshot } from "../review";
 import { InputTranslator, PresentationAdapter, placeCaret, type Presentation } from "../presentation";
 import type { DocumentRules } from "../rules";
 import { EventBus } from "../util/event-bus";
@@ -24,6 +26,8 @@ export class Editor {
   readonly #translator: InputTranslator;
   readonly #events = new EventBus<EditorEvents>();
   readonly #cleanups: Array<() => void> = [];
+  readonly #ai: AiCommander;
+  #provider: AiProvider | null = null;
   #origin: RenderOrigin = "other";
   /** The render still under way, if the renderer is asynchronous. */
   #rendering: Promise<void> | null = null;
@@ -34,12 +38,15 @@ export class Editor {
     const presentation = this.#adapter.presentation;
     this.#renderer = rendererFactory?.(presentation) ?? new FlowRenderer(presentation);
     this.#translator = new InputTranslator(this.#adapter, (command, origin) => this.#run(command, "human", origin ?? "other"));
+    this.#ai = new AiCommander(core, () => this.#provider);
 
     this.#cleanups.push(
       this.#translator.selection.onChange((path) => this.#events.emit("selection", path)),
       core.model.subscribe((state, previous) => this.#onState(state, previous)),
       core.status.onChange((status) => this.#onStatus(status)),
       core.onNotice((notice) => this.#events.emit("notice", notice)),
+      core.onReview((review) => this.#onReview(review)),
+      this.#ai.onProgress((html) => this.#events.emit("progress", html)),
     );
     this.#render(core.model.get());
   }
@@ -72,6 +79,20 @@ export class Editor {
     this.#core.rules = rules;
   }
 
+  /** How the editor reaches the AI. A function from a request to a result; see `httpProvider`. */
+  get ai(): AiProvider | null {
+    return this.#provider;
+  }
+
+  set ai(provider: AiProvider | null) {
+    this.#provider = provider;
+  }
+
+  /** The AI revision waiting for the person's decisions, or null. Decide with the review commands. */
+  get review(): ReviewSnapshot | null {
+    return this.#core.review;
+  }
+
   /** The element the person last clicked or typed in. */
   get selection(): ElementPath | null {
     return this.#translator.selection.path;
@@ -91,6 +112,23 @@ export class Editor {
   dispatch(command: Command, actor: Actor = "human"): EditResult {
     this.#translator.text.flush();
     return this.#run(command, actor, "other");
+  }
+
+  /** Asks the AI to write a new document. It replaces the current one; undo brings that back. */
+  compose(instruction?: string, context?: string): Promise<EditResult> {
+    this.#translator.text.flush();
+    return this.#ai.compose(instruction, context);
+  }
+
+  /** Asks the AI to revise the document. The result is a revision to review, not a change to the document. */
+  revise(instruction?: string, context?: string): Promise<EditResult> {
+    this.#translator.text.flush();
+    return this.#ai.revise(instruction, context);
+  }
+
+  /** Stops the AI. The document is left as it was. */
+  cancel(): void {
+    this.#ai.cancel();
   }
 
   /** Describes the selected element for a style panel, or null if nothing is selected. */
@@ -137,6 +175,13 @@ export class Editor {
   #onStatus(status: EditorStatus): void {
     this.#adapter.presentation.setLocked(status !== "idle");
     this.#events.emit("status", status);
+    // Leaving a review without a new state (discarding it) still changes what is drawn.
+    this.#render(this.#core.model.get());
+  }
+
+  #onReview(review: ReviewSnapshot | null): void {
+    this.#events.emit("review", review);
+    this.#render(this.#core.model.get());
   }
 
   // The caret is saved before the page is replaced and put back after, so a render never costs the person their place.
@@ -150,7 +195,8 @@ export class Editor {
       this.#dropMissingSelection();
     };
 
-    const pending = this.#renderer.render({ state, origin: this.#origin });
+    const html = this.#core.reviewHtml ?? undefined;
+    const pending = this.#renderer.render({ state, origin: this.#origin, html });
     if (pending) this.#rendering = pending.then(finish);
     else finish();
   }

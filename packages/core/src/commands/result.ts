@@ -14,7 +14,10 @@ export type EditErrorCode =
   | "invalid"
   | "rule-violation"
   | "nothing-to-do"
-  | "no-review";
+  | "no-review"
+  | "no-provider"
+  | "cancelled"
+  | "ai-error";
 
 export interface EditError {
   code: EditErrorCode;

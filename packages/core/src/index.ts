@@ -3,6 +3,12 @@ export { createEditor, Editor, STYLE_PROPS } from "./editor";
 export type { EditorEventName, EditorEvents, EditorOptions, ElementInfo, RenderRequest, Renderer, StyleProp } from "./editor";
 export type { EditorStatus } from "./editing";
 
+// The AI: one function from a request to a result. The editor turns the result into a revision to review.
+export { describePage, httpProvider, readAiResult } from "./ai";
+export type { AiEvent, AiProvider, AiRequest, AiResult } from "./ai";
+export type { ReviewChange, ReviewChangeKind, ReviewFlag, ReviewSnapshot } from "./review";
+export type { ScopeReport } from "./diff";
+
 // Commands: everything that can be done to a document.
 export { heading, isFailure, paragraph, textBox } from "./commands";
 export type {

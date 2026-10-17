@@ -1,6 +1,7 @@
 import type { Command, EditResult, Notice } from "../commands";
 import type { Actor, ReadonlyStateModel } from "../model";
 import type { Committer } from "./committer";
+import type { ReviewStore } from "./review-store";
 import type { RuleGate } from "./rule-gate";
 import type { StatusMachine } from "./status";
 
@@ -10,6 +11,7 @@ export interface EditingContext {
   committer: Committer;
   gate: RuleGate;
   status: StatusMachine;
+  review: ReviewStore;
 }
 
 /** Knows how to run one group of commands. */
