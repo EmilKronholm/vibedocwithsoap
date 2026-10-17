@@ -1,4 +1,4 @@
-import { createEditor } from "@folio/core";
+import { LocalStorageStore, createEditor } from "@folio/core";
 import { h } from "./dom";
 import { createPanel } from "./panel";
 import { SAMPLE } from "./sample";
@@ -6,7 +6,15 @@ import { SAMPLE } from "./sample";
 const page = document.querySelector<HTMLElement>("#page")!;
 const panel = document.querySelector<HTMLElement>("#panel")!;
 
-const editor = createEditor({ container: page, html: SAMPLE });
+// The document is kept in this browser. Any other store works the same way: load a snapshot, hand it back.
+const store = new LocalStorageStore("folio-example-document");
+const editor = createEditor({ container: page, html: SAMPLE, snapshot: (await store.load()) ?? undefined });
+const autosave = editor.autosave(store);
+const saved = h("small", { style: "padding: 0 14px" }, "");
+document.querySelector("aside h1")!.after(saved);
+autosave.onStatus((status) => {
+  saved.textContent = status.state === "saved" ? `Saved in this browser at ${status.at.toLocaleTimeString()}` : status.state === "saving" ? "Saving…" : `Not saved: ${status.message}`;
+});
 
 if (!editor.plaintextOnlySupported) {
   panel.before(h("p", { class: "warn", style: "padding: 8px 14px" }, "This browser cannot edit as plain text, so the page is read-only."));

@@ -13,14 +13,12 @@ export class Committer {
   commit(next: DocumentState, author: Actor, summary?: string, key = ""): void {
     // History needs the state from before, so it is recorded first.
     this.history.record(this.model.get(), key);
-    this.writer.commit(next);
-    this.versions.record(next, author, summary);
+    this.#write(next, author, summary);
   }
 
   /** Moves to a state that history already holds. Not a new undo step. */
   moveTo(state: DocumentState, summary?: string): void {
-    this.writer.commit(state);
-    this.versions.record(state, "human", summary);
+    this.#write(state, "human", summary);
   }
 
   undo(): boolean {
@@ -35,5 +33,11 @@ export class Committer {
     if (!next) return false;
     this.moveTo(next, "Redo");
     return true;
+  }
+
+  // The version is recorded before the model announces the change, so whoever listens sees both up to date.
+  #write(state: DocumentState, author: Actor, summary?: string): void {
+    this.versions.record(state, author, summary);
+    this.writer.commit(state);
   }
 }

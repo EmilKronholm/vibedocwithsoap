@@ -2,7 +2,8 @@ import { AiCommander, type AiProvider } from "../ai";
 import { isFailure, type Caret, type Command, type EditResult } from "../commands";
 import type { ElementPath } from "../dom";
 import type { EditingCore, EditorStatus } from "../editing";
-import type { Actor, DocumentState, Version } from "../model";
+import { createSnapshot, type Actor, type DocumentSnapshot, type DocumentState, type Version } from "../model";
+import { Autosave, type AutosaveOptions, type DocumentStore } from "../persistence";
 import type { ReviewSnapshot } from "../review";
 import { InputTranslator, PresentationAdapter, placeCaret, type Presentation } from "../presentation";
 import type { DocumentRules } from "../rules";
@@ -129,6 +130,18 @@ export class Editor {
   /** Stops the AI. The document is left as it was. */
   cancel(): void {
     this.#ai.cancel();
+  }
+
+  /** The document and its versions, as plain JSON for saving. */
+  snapshot(): DocumentSnapshot {
+    return createSnapshot(this.state, this.versions);
+  }
+
+  /** Saves the document to `store` after changes. Returns the autosave, for its status and `flush()`. */
+  autosave(store: DocumentStore, options?: AutosaveOptions): Autosave {
+    const autosave = new Autosave({ onChange: (listener) => this.on("state", listener), snapshot: () => this.snapshot() }, store, options);
+    this.#cleanups.push(() => autosave.destroy());
+    return autosave;
   }
 
   /** Describes the selected element for a style panel, or null if nothing is selected. */

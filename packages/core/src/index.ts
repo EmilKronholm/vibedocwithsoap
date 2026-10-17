@@ -38,6 +38,10 @@ export type { Actor, DocumentSnapshot, DocumentState, Margins, PageSetup, PaperS
 export { checkPage, describeRules, fitPage } from "./rules";
 export type { ContentAllow, ContentLevel, DocumentRules, PageRules, PageViolation, PermissionRules } from "./rules";
 
+// Saving: a store is anything that can load and save one snapshot of JSON.
+export { LocalStorageStore, MemoryStore } from "./persistence";
+export type { Autosave, DocumentStore, SaveStatus } from "./persistence";
+
 // Settings a document declares for the host to show as controls, and fonts.
 export { readKnobs } from "./knobs";
 export type { Knob } from "./knobs";

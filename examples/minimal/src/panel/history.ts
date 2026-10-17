@@ -1,9 +1,14 @@
 import { button, h, row } from "../dom";
+import { SAMPLE } from "../sample";
 import { section, type PanelContext } from "./section";
 
 export function historySection({ editor, run }: PanelContext) {
   return section("History", () => [
-    row(button("Undo", () => run({ kind: "undo" }), !editor.canUndo), button("Redo", () => run({ kind: "redo" }), !editor.canRedo)),
+    row(
+      button("Undo", () => run({ kind: "undo" }), !editor.canUndo),
+      button("Redo", () => run({ kind: "redo" }), !editor.canRedo),
+      button("Reset to the sample", () => run({ kind: "replaceAll", html: SAMPLE })),
+    ),
     ...[...editor.versions].reverse().map((v, i) =>
       row(
         h("small", {}, `${v.author} · ${new Date(v.createdAt).toLocaleTimeString()} · ${v.summary ?? "edit"}`),
