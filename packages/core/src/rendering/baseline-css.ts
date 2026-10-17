@@ -22,7 +22,7 @@ export const BASELINE_CSS = `
   tab-size: 4;
   overflow-wrap: anywhere;
 }
-:where(.${DOC_CLASS}) :where(*, *::before, *::after) {
+:where(.${DOC_CLASS}) :where(*) {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
