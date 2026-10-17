@@ -1,5 +1,6 @@
 import { isFailure, type Command, type Editor } from "@folio/core";
 import { aiSection } from "./ai";
+import { exportSection } from "./export";
 import { historySection } from "./history";
 import { insertSection } from "./insert";
 import { knobSection, pageSection } from "./page";
@@ -20,5 +21,5 @@ export function createPanel(editor: Editor, log: (line: string) => void): Sectio
       log(`${command.kind}: ${isFailure(result) ? `refused (${result.error.message})` : result.changed ? "ok" : "no change"}`);
     },
   };
-  return [aiSection, reviewSection, historySection, selectionSection, insertSection, pageSection, knobSection, rulesSection].map((build) => build(context));
+  return [aiSection, reviewSection, historySection, selectionSection, insertSection, pageSection, knobSection, rulesSection, exportSection].map((build) => build(context));
 }
