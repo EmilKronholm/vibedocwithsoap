@@ -1,4 +1,6 @@
-/** Elements a person can edit. Each becomes its own plain-text editor. */
+import { isTextUnit, parseHtml, pathKey, stampPaths, PATH_ATTR, type ElementPath } from "../../dom";
+
+/** Elements a person can edit, provided they hold only text. Each becomes its own plain-text editor. */
 export const EDITABLE_TAGS: ReadonlySet<string> = new Set([
   "H1",
   "H2",
@@ -14,7 +16,12 @@ export const EDITABLE_TAGS: ReadonlySet<string> = new Set([
   "FIGCAPTION",
   "DT",
   "DD",
+  "SPAN",
+  "DIV",
 ]);
+
+/** Marks an editable element, whether or not the browser can edit it. */
+export const UNIT_ATTR = "data-folio-unit";
 
 /** Browser events forwarded to listeners. `selectionchange` is forwarded only when the selection is inside the presentation. */
 export const RAW_EVENTS = [
@@ -42,15 +49,13 @@ export const RAW_EVENTS = [
 
 export type RawEventName = (typeof RAW_EVENTS)[number];
 
-const EDITABLE_SELECTOR = Array.from(EDITABLE_TAGS, (tag) => tag.toLowerCase()).join(", ");
-
 export type RawEventListener = (event: Event) => void;
 
 /**
  * Shows an HTML string and reports every raw browser event inside it.
  * It decides nothing and never changes the document.
  *
- * The HTML is not sanitised here: give it only HTML you trust.
+ * The HTML is not sanitised here: give it only HTML the editing layer has already cleaned.
  */
 export class Presentation {
   readonly root: HTMLElement;
@@ -63,40 +68,43 @@ export class Presentation {
 
   constructor(root: HTMLElement) {
     this.root = root;
-
-    for (const name of RAW_EVENTS) {
-      if (name === "selectionchange") continue;
-      const forward = (event: Event) => this.#emit(event);
-      // Capture: see the event before anything inside the document can stop it.
-      root.addEventListener(name, forward, true);
-      this.#cleanups.push(() => root.removeEventListener(name, forward, true));
-    }
-
-    // selectionchange fires on the document, not on the element.
-    const doc = root.ownerDocument;
-    const selection = (event: Event) => {
-      const anchor = doc.getSelection()?.anchorNode;
-      if (anchor && root.contains(anchor)) this.#emit(event);
-    };
-    doc.addEventListener("selectionchange", selection);
-    this.#cleanups.push(() => doc.removeEventListener("selectionchange", selection));
+    for (const name of RAW_EVENTS) if (name !== "selectionchange") this.#forward(root, name, true);
+    this.#forwardSelectionChange();
   }
 
-  /** Replaces what is shown with `html` and makes its text elements editable. */
+  /** Replaces what is shown with `html`. Every element gets its path, and text elements become editable. */
   setHtml(html: string): void {
-    // A template parses without a parent element, so a top-level <tr> or <li> is kept.
-    const template = this.root.ownerDocument.createElement("template");
-    template.innerHTML = html;
-    this.root.replaceChildren(template.content);
-    this.#makeEditable();
+    const parsed = parseHtml(html, this.root.ownerDocument);
+    stampPaths(parsed);
+    this.root.replaceChildren(...Array.from(parsed.childNodes));
+    this.makeEditable(this.root);
+  }
+
+  /** Makes the text elements under `root` editable. Used for content put on the page by other means, such as pages. */
+  makeEditable(root: Element): void {
+    for (const element of Array.from(root.querySelectorAll<HTMLElement>("*"))) {
+      if (!EDITABLE_TAGS.has(element.tagName.toUpperCase()) || !isTextUnit(element)) continue;
+      element.setAttribute(UNIT_ATTR, "");
+      // setAttribute, not the property: the property throws in browsers that do not know the value.
+      element.setAttribute("contenteditable", "plaintext-only");
+      if (element.contentEditable !== "plaintext-only") {
+        element.removeAttribute("contenteditable");
+        this.plaintextOnlySupported = false;
+      }
+    }
   }
 
   /** The editable element containing `node`, or null if there is none inside the presentation. */
   unitOf(node: EventTarget | Node | null): HTMLElement | null {
     const element = node instanceof Element ? node : node instanceof Node ? node.parentElement : null;
-    const unit = element?.closest<HTMLElement>(EDITABLE_SELECTOR) ?? null;
+    const unit = element?.closest<HTMLElement>(`[${UNIT_ATTR}]`) ?? null;
     // closest() climbs past the root, so an editable ancestor outside it must not count.
     return unit && this.root.contains(unit) ? unit : null;
+  }
+
+  /** The element showing the document element at `path`. */
+  byPath(path: ElementPath): HTMLElement | null {
+    return this.root.querySelector<HTMLElement>(`[${PATH_ATTR}="${pathKey(path)}"]`);
   }
 
   /** Calls `listener` for every raw event. Returns a function that stops it. */
@@ -116,14 +124,21 @@ export class Presentation {
     for (const listener of this.#listeners) listener(event);
   }
 
-  #makeEditable(): void {
-    for (const element of Array.from(this.root.querySelectorAll<HTMLElement>(EDITABLE_SELECTOR))) {
-      // setAttribute, not the property: the property throws in browsers that do not know the value.
-      element.setAttribute("contenteditable", "plaintext-only");
-      if (element.contentEditable !== "plaintext-only") {
-        element.removeAttribute("contenteditable");
-        this.plaintextOnlySupported = false;
-      }
-    }
+  #forward(target: EventTarget, name: string, capture: boolean): void {
+    const forward = (event: Event) => this.#emit(event);
+    // Capture: see the event before anything inside the document can stop it.
+    target.addEventListener(name, forward, capture);
+    this.#cleanups.push(() => target.removeEventListener(name, forward, capture));
+  }
+
+  // selectionchange fires on the document, not on the element.
+  #forwardSelectionChange(): void {
+    const doc = this.root.ownerDocument;
+    const onChange = (event: Event) => {
+      const anchor = doc.getSelection()?.anchorNode;
+      if (anchor && this.root.contains(anchor)) this.#emit(event);
+    };
+    doc.addEventListener("selectionchange", onChange);
+    this.#cleanups.push(() => doc.removeEventListener("selectionchange", onChange));
   }
 }
