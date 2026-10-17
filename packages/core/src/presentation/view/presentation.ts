@@ -1,4 +1,6 @@
 import { isTextUnit, parseHtml, pathKey, stampPaths, PATH_ATTR, type ElementPath } from "../../dom";
+import type { PageSetup } from "../../model";
+import { buildSheets } from "./pages-view";
 import { installUiStyles } from "./ui-styles";
 
 /** Elements a person can edit, provided they hold only text. Each becomes its own plain-text editor. */
@@ -80,6 +82,12 @@ export class Presentation {
     const parsed = parseHtml(html, this.root.ownerDocument);
     stampPaths(parsed);
     this.root.replaceChildren(...Array.from(parsed.childNodes));
+    this.makeEditable(this.root);
+  }
+
+  /** Replaces what is shown with pages: one sheet of paper for each. Text elements become editable. */
+  setPages(pages: readonly HTMLElement[], page: PageSetup): void {
+    this.root.replaceChildren(...buildSheets(this.root.ownerDocument, pages, page));
     this.makeEditable(this.root);
   }
 

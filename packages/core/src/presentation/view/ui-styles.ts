@@ -1,4 +1,13 @@
+import { BASELINE_CSS } from "../../rendering/baseline-css";
+
 const STYLE_ID = "folio-ui-styles";
+
+/** Paper on the page: the sheet, and the room between sheets (`--folio-page-gap`). */
+const SHEET_CSS = `
+.folio-sheet { position: relative; box-sizing: border-box; margin: 0 auto var(--folio-page-gap, 24px); box-shadow: var(--folio-sheet-shadow, 0 1px 4px rgba(0, 0, 0, 0.15)); }
+.folio-sheet-content { position: relative; height: 100%; }
+[data-folio-unit]:empty { min-height: 1lh; }
+`;
 
 /** How a revision under review looks on the page. */
 const REVIEW_CSS = `
@@ -18,11 +27,15 @@ del[data-folio-rejected] { text-decoration: none; background: none; }
 [data-folio-kind="restyled"][data-folio-rejected] { box-shadow: -8px 0 0 -5px #94a3b8; }
 `;
 
-/** Puts the library's own CSS in the page once. The document's text is styled by the document; this is only the markers. */
+/**
+ * Puts the library's own CSS in the page once: the baseline a document starts
+ * from, the sheets, and the review markers. The document's text is styled by
+ * the document itself.
+ */
 export function installUiStyles(doc: Document): void {
   if (doc.getElementById(STYLE_ID)) return;
   const style = doc.createElement("style");
   style.id = STYLE_ID;
-  style.textContent = REVIEW_CSS;
+  style.textContent = BASELINE_CSS + SHEET_CSS + REVIEW_CSS;
   doc.head.append(style);
 }

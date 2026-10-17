@@ -10,6 +10,7 @@ import type { DocumentRules } from "../rules";
 import { EventBus } from "../util/event-bus";
 import { restoreCaret, saveCaret } from "./caret-keeper";
 import type { EditorEventName, EditorEvents } from "./events";
+import { printDocument, printableHtml } from "./export";
 import { describeElement, type ElementInfo } from "./inspect";
 import { FlowRenderer, type RenderOrigin, type Renderer } from "./renderer";
 
@@ -30,6 +31,7 @@ export class Editor {
   readonly #ai: AiCommander;
   #provider: AiProvider | null = null;
   #origin: RenderOrigin = "other";
+  #renderTicket = 0;
   /** The render still under way, if the renderer is asynchronous. */
   #rendering: Promise<void> | null = null;
 
@@ -132,6 +134,18 @@ export class Editor {
     this.#ai.cancel();
   }
 
+  /** The document laid out on exact pages as a standalone HTML document, for your own PDF pipeline. */
+  printableHtml(): Promise<string> {
+    this.#translator.text.flush();
+    return printableHtml(this.state, this.#adapter.presentation.root.ownerDocument);
+  }
+
+  /** Opens the print dialog on the paged document. "Save as PDF" there makes the file; no server needed. */
+  print(): Promise<void> {
+    this.#translator.text.flush();
+    return printDocument(this.state, this.#adapter.presentation.root.ownerDocument);
+  }
+
   /** The document and its versions, as plain JSON for saving. */
   snapshot(): DocumentSnapshot {
     return createSnapshot(this.state, this.versions);
@@ -201,7 +215,10 @@ export class Editor {
   #render(state: DocumentState): void {
     const presentation = this.#adapter.presentation;
     const caret = saveCaret(presentation);
+    const ticket = ++this.#renderTicket;
     const finish = () => {
+      // A newer render has started: it will do the finishing.
+      if (ticket !== this.#renderTicket) return;
       this.#rendering = null;
       presentation.setLocked(this.#core.status.current !== "idle");
       restoreCaret(presentation, caret);
