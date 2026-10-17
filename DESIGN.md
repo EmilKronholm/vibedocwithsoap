@@ -9,7 +9,7 @@ This file is the map. Details are in `docs/`.
 | Area | Job | Lives in |
 |---|---|---|
 | **Model** | The state of the document: its HTML and its page setup. Subscribable. Can only be changed through editing. | `model/` |
-| **Editing** | The one door every change goes through, human or AI. Decides whether a change is allowed, applies it, records history. | `editing/`, `rules/`, `sanitize/`, `diff/`, `review/`, `ai/` |
+| **Editing** | The one door every change goes through, human or AI. Decides whether a change is allowed, applies it, records history. | `commands/`, `editing/`, `rules/`, `sanitize/`, `diff/`, `review/`, `ai/` |
 | **Rendering** | Turns the state into pages you can see and print, and into exports. Reads the state, never writes it. | `rendering/`, `presentation/` |
 
 `persistence/` lets the host save and load; `editor/` wires everything into one object.
@@ -20,7 +20,7 @@ This file is the map. Details are in `docs/`.
 browser event
   -> presentation adapter (translates native events into commands)
   -> editing: dispatch(command, actor)
-       permission -> status lock -> apply -> rules/sanitise -> commit
+       status -> permission -> apply -> rules and sanitiser -> commit
   -> state model (subscribe)
   -> rendering (pages) -> presentation (draws)
 ```
@@ -29,8 +29,8 @@ The AI uses the same door. It does not write to the model: it makes a proposal, 
 
 ## Settled (from the original design and the discussion)
 
-- State is `{ html, page }`. Everything else (history, versions) is kept beside it.
-- The model changes only through editing. This is enforced by capability: only editing is handed the writer.
+- State is `{ html, page }`. History and versions are kept beside it.
+- The model changes only through editing, enforced by who is handed the writer.
 - Humans edit existing text elements. The browser types natively inside a `plaintext-only` unit; the adapter only watches.
 - The AI returns the whole HTML. The same door accepts it, as a proposal.
 - Export uses the browser, from the state, never from the live editing DOM.
@@ -38,31 +38,57 @@ The AI uses the same door. It does not write to the model: it makes a proposal, 
 
 ## Decided while building (change any of these)
 
-Each is explained in `docs/decisions.md`.
+Each is explained in [`docs/decisions.md`](docs/decisions.md). The short list:
 
-1. The document is an HTML **string**; DOM is only a parse/render step. Core uses standard DOM APIs (`DOMParser`, `template`), which exist in browsers and in happy-dom for tests.
-2. Elements are addressed by **path** (child indexes), not ids. A command is applied immediately after the view and model agree, so paths are stable for its lifetime.
+1. The document is an HTML **string**; DOM is only a parse/render step.
+2. Elements are addressed by **path**, not ids.
 3. A human edit that breaks a rule is **rejected**. AI output that breaks a rule is **cleaned and reported**.
-4. Human typing is committed per text element (debounced), as a `setText` command. Structure changes (Enter, Backspace at the edge, move, delete) are commands the adapter creates.
+4. Human typing is committed per text element (debounced) as `setText`. Structure changes are commands.
 5. While the AI works or a review is open, the document is **locked**. There is no merging.
-6. Pagination **splits the DOM into one tree per page**. The browser only measures; breaking decisions are ours and testable with a fake measurer.
-7. Rendering after native typing is **deferred** until the text element loses focus, so the caret is never disturbed.
+6. Pagination **splits the DOM into one tree per page**. The browser only measures; breaking is decided in testable code.
+7. After a render the **caret is put back**, or where a command says it belongs.
+8. The document is drawn into the page **without an iframe**.
 
 ## Open
 
 - Notes and comments on text or areas are not part of this rewrite yet.
-- Provenance (`data-source`) is not ported yet.
+- Provenance (`data-source`) and compose-from-sources are not ported.
 - Word export is dropped. PDF is the print path.
-- A React wrapper is not written. The web component in `packages/ui` is the framework-neutral entry.
+- A React wrapper is not written.
 - Whether stable ids should replace paths.
+- Whether an iframe or shadow DOM should isolate the document's CSS.
+
+## State of the work
+
+Everything is written and nothing has been run. See [`docs/known-issues.md`](docs/known-issues.md) for where to start and what to expect.
 
 ## Layout
 
 ```
-packages/core   model, editing, rules, rendering, presentation, ai, persistence, editor facade
+packages/core   everything: model, editing, rules, rendering, presentation, ai, persistence, editor
 packages/ui     <folio-editor> web component over core
 examples/*      throwaway apps for trying things; not part of what Folio offers
-docs/           architecture, commands, rules, review, rendering, decisions
+docs/           architecture, commands, rules, review and AI, rendering, decisions, known issues
 ```
+
+Inside `packages/core/src`:
+
+| Folder | What it holds |
+|---|---|
+| `util` | An emitter, a typed event bus, ids |
+| `dom` | Parsing, paths, text units, one-style normalisation |
+| `model` | Page, state, state model, undo history, versions, snapshots |
+| `commands` | Every command, who may use which, results |
+| `rules` | Content levels, fonts, paper, permissions, CSS filter, `describeRules` |
+| `sanitize` | The allowlist, then the rules |
+| `knobs`, `fonts` | Settings a document declares; web font imports |
+| `diff` | Units, word diff, CSS diff, matching, scope check |
+| `review` | Review session, applying decisions, marking changes on the page |
+| `editing` | The core, status, rule gate, committer, appliers, handlers |
+| `ai` | Request and result contract, commander, HTTP provider |
+| `persistence` | Stores and autosave |
+| `rendering` | Pagination, baseline CSS, print HTML |
+| `presentation` | The view, the sheets, the adapter and its input translators |
+| `editor` | `createEditor` and the facade |
 
 See `docs/conventions.md` for how code and comments are written here.

@@ -190,7 +190,8 @@ export class Editor {
     } finally {
       this.#origin = "other";
     }
-    if (!isFailure(result) && result.focus) this.#afterRender(() => this.#placeCaret(result.focus!));
+    const focus = isFailure(result) ? undefined : result.focus;
+    if (focus) this.#afterRender(() => this.#placeCaret(focus));
     return result;
   }
 

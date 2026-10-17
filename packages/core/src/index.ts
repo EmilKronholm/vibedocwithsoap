@@ -1,5 +1,5 @@
 // The editor: create one, give it commands, listen to what it tells you.
-export { createEditor, Editor, STYLE_PROPS } from "./editor";
+export { FlowRenderer, createEditor, Editor, STYLE_PROPS } from "./editor";
 export type { EditorEventName, EditorEvents, EditorOptions, ElementInfo, RenderRequest, Renderer, StyleProp } from "./editor";
 export type { EditorStatus } from "./editing";
 
