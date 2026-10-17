@@ -21,6 +21,7 @@ export {
   isHistoryKind,
   isReviewKind,
 } from "./kinds";
+export { heading, paragraph, textBox, type TextBoxInit } from "./new-elements";
 export {
   failed,
   succeeded,

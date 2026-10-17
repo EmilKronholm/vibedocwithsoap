@@ -7,13 +7,17 @@ export function isSkipped(el: Element): boolean {
   return SKIPPED_TAGS.has(el.tagName.toUpperCase());
 }
 
-/** An element whose only content is text and line breaks: one style, nothing nested. */
-export function isTextUnit(el: Element): boolean {
+/** Whether an element can hold typed text: nothing inside it but text and line breaks, empty or not. */
+export function holdsOnlyText(el: Element): boolean {
   if (isSkipped(el) || el.namespaceURI === SVG_NS) return false;
   const tag = el.tagName.toUpperCase();
-  if (REPLACED_TAGS.has(tag) || tag === "BR" || tag === "WBR") return false;
-  if (!onlyBreaks(el)) return false;
-  return Boolean((el.textContent ?? "").trim()) || EMPTY_TEXT_TAGS.has(tag);
+  return !REPLACED_TAGS.has(tag) && tag !== "BR" && tag !== "WBR" && onlyBreaks(el);
+}
+
+/** An element whose only content is text and line breaks: one style, nothing nested. */
+export function isTextUnit(el: Element): boolean {
+  if (!holdsOnlyText(el)) return false;
+  return Boolean((el.textContent ?? "").trim()) || EMPTY_TEXT_TAGS.has(el.tagName.toUpperCase());
 }
 
 /**
