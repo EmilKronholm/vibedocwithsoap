@@ -1,4 +1,4 @@
-import { KeyHandler, type ViewAccess } from "./key-handler";
+import { KeyHandler } from "./key-handler";
 import { PasteHandler } from "./paste-handler";
 import type { PresentationAdapter } from "./presentation-adapter";
 import { SelectionTracker } from "./selection-tracker";
@@ -10,10 +10,10 @@ export class InputTranslator {
   readonly text: TextCommitter;
   readonly selection: SelectionTracker;
 
-  constructor(adapter: PresentationAdapter, view: ViewAccess, sink: CommandSink) {
+  constructor(adapter: PresentationAdapter, sink: CommandSink) {
     this.text = new TextCommitter(adapter, sink);
     this.selection = new SelectionTracker(adapter);
-    new KeyHandler(adapter, view, sink, () => this.text.flush());
+    new KeyHandler(adapter, sink, () => this.text.flush());
     new PasteHandler(adapter);
   }
 

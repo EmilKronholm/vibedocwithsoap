@@ -7,29 +7,41 @@
     <style>
       * { box-sizing: border-box; }
       body { margin: 0; font: 13px system-ui, sans-serif; color: #0f172a; background: #e8eaed; }
-      .layout { display: grid; grid-template-columns: minmax(0, 1fr) 460px; height: 100vh; }
+      .layout { display: grid; grid-template-columns: minmax(0, 1fr) 420px; height: 100vh; }
       .left { overflow: auto; padding: 24px; }
-      aside { overflow: auto; background: #fff; border-left: 1px solid #d5d8dd; display: flex; flex-direction: column; }
-      aside h2 { font-size: 12px; margin: 0; padding: 8px 12px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
-      aside h2 button { font: inherit; padding: 2px 8px; }
-      #log { margin: 0; padding: 8px 12px; font: 11px/1.45 ui-monospace, Menlo, Consolas, monospace; white-space: pre-wrap; word-break: break-word; flex: 1; overflow: auto; }
+      aside { overflow: auto; background: #fff; border-left: 1px solid #d5d8dd; }
+      aside h1 { font-size: 13px; margin: 0; padding: 10px 14px; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; background: #fff; z-index: 1; }
 
-      /* The page. Not part of Folio: a white box with the presentation in it. */
-      #page { width: 640px; max-width: 100%; min-height: 840px; margin: 0 auto; background: #fff; padding: 56px 64px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15); font-family: Georgia, serif; }
-      #page h1 { font-size: 26px; margin: 0 0 10px; }
-      #page h2 { font-size: 16px; margin: 22px 0 6px; color: #1f3d63; }
-      #page p, #page li { line-height: 1.5; margin: 0 0 8px; }
+      /* The page. Not part of Folio: a white box the editor draws into. */
+      #page { width: 680px; max-width: 100%; min-height: 880px; margin: 0 auto; background: #fff; padding: 56px 64px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15); position: relative; }
       #page [contenteditable] { outline: none; border-radius: 2px; }
       #page [contenteditable]:hover { box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12); }
       #page [contenteditable]:focus { box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.4); }
+      #page [data-folio-unit]:empty { min-height: 1lh; }
+
+      details { border-bottom: 1px solid #e2e8f0; }
+      summary { padding: 9px 14px; cursor: pointer; font-weight: 600; }
+      .body { padding: 2px 14px 12px; display: flex; flex-direction: column; gap: 8px; }
+      .row { display: flex; gap: 6px; flex-wrap: wrap; align-items: flex-end; }
+      .field { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 80px; }
+      .field > span, small, .hint { color: #64748b; font-size: 11px; }
+      .hint { margin: 0; line-height: 1.4; }
+      .warn { color: #b45309; margin: 0; }
+      input, select, button { font: inherit; }
+      input:not([type]), input[type="number"], select { width: 100%; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff; }
+      input[type="color"] { width: 100%; height: 26px; padding: 0; border: 1px solid #cbd5e1; border-radius: 4px; }
+      button { padding: 4px 9px; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff; cursor: pointer; }
+      button:hover:not(:disabled) { background: #f1f5f9; }
+      button:disabled { opacity: 0.45; cursor: default; }
+      pre { margin: 0; padding: 6px 8px; background: #f8fafc; border-radius: 4px; font: 11px/1.4 ui-monospace, Menlo, Consolas, monospace; white-space: pre-wrap; word-break: break-word; max-height: 260px; overflow: auto; }
     </style>
   </head>
   <body>
     <div class="layout">
       <div class="left"><div id="page"></div></div>
       <aside>
-        <h2>Adapter events (folio:*) <button id="clear">Clear</button></h2>
-        <pre id="log"></pre>
+        <h1>Folio example</h1>
+        <div id="panel"></div>
       </aside>
     </div>
     <script type="module" src="/src/main.ts"></script>

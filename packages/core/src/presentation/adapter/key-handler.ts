@@ -1,23 +1,20 @@
-import { isFailure, type EditResult } from "../../commands";
-import { PARAGRAPH_TAGS, pathOfStamped, unitText, type ElementPath } from "../../dom";
-import { caretOffset, placeCaret } from "./caret";
+import { isFailure } from "../../commands";
+import { PARAGRAPH_TAGS, pathOfStamped, unitText } from "../../dom";
+import { caretOffset } from "./caret";
 import type { PresentationAdapter, PresentationEvent } from "./presentation-adapter";
 import type { CommandSink } from "./sink";
-
-/** What the key handler needs to find an element on the page again after a command changed it. */
-export interface ViewAccess {
-  byPath(path: ElementPath): HTMLElement | null;
-}
 
 /**
  * Takes over the few keys where the browser's own behaviour would change the
  * document's structure behind our back: Enter, Backspace and Delete at the
  * edge of an element, and undo and redo.
+ *
+ * Where the caret belongs afterwards is not decided here: the command's
+ * result says, and the editor puts it there once the page is drawn.
  */
 export class KeyHandler {
   constructor(
     adapter: PresentationAdapter,
-    private readonly view: ViewAccess,
     private readonly sink: CommandSink,
     private readonly flushTyping: () => void,
   ) {
@@ -52,8 +49,7 @@ export class KeyHandler {
 
     event.preventDefault();
     this.flushTyping();
-    const redo = key === "y" || event.shiftKey;
-    this.#restoreCaret(this.sink({ kind: redo ? "redo" : "undo" }));
+    this.sink({ kind: key === "y" || event.shiftKey ? "redo" : "undo" });
     return true;
   }
 
@@ -68,7 +64,7 @@ export class KeyHandler {
       unit.ownerDocument.execCommand("insertLineBreak");
       return;
     }
-    this.#restoreCaret(this.sink({ kind: "splitUnit", path, offset }));
+    this.sink({ kind: "splitUnit", path, offset });
   }
 
   // Backspace at the very start, or Delete at the very end, joins with the neighbour.
@@ -84,14 +80,6 @@ export class KeyHandler {
 
     const result = this.sink({ kind: "mergeUnits", path, direction: atStart ? "previous" : "next" });
     // Nothing to join with: leave the key to the browser.
-    if (isFailure(result)) return;
-    event.preventDefault();
-    this.#restoreCaret(result);
-  }
-
-  #restoreCaret(result: EditResult): void {
-    if (isFailure(result) || !result.focus) return;
-    const element = this.view.byPath(result.focus.path);
-    if (element) placeCaret(element, result.focus.offset);
+    if (!isFailure(result)) event.preventDefault();
   }
 }

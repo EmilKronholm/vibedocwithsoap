@@ -65,7 +65,7 @@ describe("typing", () => {
   it("sends the new text once typing pauses", () => {
     const { adapter, container } = setup("<p>Hello</p>");
     const sink = vi.fn().mockReturnValue({ ok: true, changed: true, notices: [] });
-    new InputTranslator(adapter, adapter.presentation, sink);
+    new InputTranslator(adapter, sink);
 
     const p = container.querySelector("p")!;
     p.textContent = "Hello!";
@@ -79,7 +79,7 @@ describe("typing", () => {
   it("sends one command for a burst of typing", () => {
     const { adapter, container } = setup("<p>a</p>");
     const sink = vi.fn().mockReturnValue({ ok: true, changed: true, notices: [] });
-    new InputTranslator(adapter, adapter.presentation, sink);
+    new InputTranslator(adapter, sink);
 
     const p = container.querySelector("p")!;
     for (const text of ["ab", "abc", "abcd"]) {
@@ -95,7 +95,7 @@ describe("typing", () => {
   it("sends the text at once when focus leaves the element", () => {
     const { adapter, container } = setup("<p>a</p>");
     const sink = vi.fn().mockReturnValue({ ok: true, changed: true, notices: [] });
-    new InputTranslator(adapter, adapter.presentation, sink);
+    new InputTranslator(adapter, sink);
 
     const p = container.querySelector("p")!;
     p.textContent = "b";

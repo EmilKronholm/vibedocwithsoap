@@ -10,4 +10,3 @@ export { SelectionTracker } from "./adapter/selection-tracker";
 export { TextCommitter } from "./adapter/text-committer";
 export { caretOffset, placeCaret } from "./adapter/caret";
 export type { CommandSink } from "./adapter/sink";
-export type { ViewAccess } from "./adapter/key-handler";

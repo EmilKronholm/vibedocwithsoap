@@ -10,6 +10,7 @@ import type { CommandSink } from "./sink";
 export class TextCommitter {
   #pending: HTMLElement | null = null;
   #timer: ReturnType<typeof setTimeout> | null = null;
+  #composing = false;
 
   constructor(
     adapter: PresentationAdapter,
@@ -18,6 +19,8 @@ export class TextCommitter {
   ) {
     adapter.on("input", ({ detail }) => this.#changed(detail.unit));
     adapter.on("focusout", () => this.flush());
+    adapter.on("compositionstart", () => (this.#composing = true));
+    adapter.on("compositionend", () => (this.#composing = false));
   }
 
   /** Sends any text typed but not yet sent. */
@@ -36,10 +39,15 @@ export class TextCommitter {
 
   #changed(unit: HTMLElement | null): void {
     if (!unit) return;
-    // Moving to another element commits the one before; the focusout handler does that.
     this.#pending = unit;
     if (this.#timer) clearTimeout(this.#timer);
-    this.#timer = setTimeout(() => this.flush(), this.debounceMs);
+    this.#timer = setTimeout(() => this.#onPause(), this.debounceMs);
+  }
+
+  // Re-rendering in the middle of an input method's composition would break it, so wait for it to end.
+  #onPause(): void {
+    if (this.#composing) this.#timer = setTimeout(() => this.#onPause(), this.debounceMs);
+    else this.flush();
   }
 
   #send(unit: HTMLElement): void {

@@ -65,6 +65,7 @@ export class Presentation {
 
   readonly #listeners = new Set<RawEventListener>();
   readonly #cleanups: Array<() => void> = [];
+  #locked = false;
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -85,13 +86,27 @@ export class Presentation {
     for (const element of Array.from(root.querySelectorAll<HTMLElement>("*"))) {
       if (!EDITABLE_TAGS.has(element.tagName.toUpperCase()) || !isTextUnit(element)) continue;
       element.setAttribute(UNIT_ATTR, "");
-      // setAttribute, not the property: the property throws in browsers that do not know the value.
-      element.setAttribute("contenteditable", "plaintext-only");
-      if (element.contentEditable !== "plaintext-only") {
-        element.removeAttribute("contenteditable");
-        this.plaintextOnlySupported = false;
-      }
+      this.#applyEditable(element);
     }
+  }
+
+  #applyEditable(element: HTMLElement): void {
+    if (this.#locked) {
+      element.removeAttribute("contenteditable");
+      return;
+    }
+    // setAttribute, not the property: the property throws in browsers that do not know the value.
+    element.setAttribute("contenteditable", "plaintext-only");
+    if (element.contentEditable !== "plaintext-only") {
+      element.removeAttribute("contenteditable");
+      this.plaintextOnlySupported = false;
+    }
+  }
+
+  /** While locked, text elements cannot be typed into. Used while the AI works or a review is open. */
+  setLocked(locked: boolean): void {
+    this.#locked = locked;
+    for (const unit of Array.from(this.root.querySelectorAll<HTMLElement>(`[${UNIT_ATTR}]`))) this.#applyEditable(unit);
   }
 
   /** The editable element containing `node`, or null if there is none inside the presentation. */
