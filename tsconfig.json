@@ -9,7 +9,12 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "resolveJsonModule": true,
-    "types": ["node"]
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@folio/core": ["packages/core/src/index.ts"],
+      "@folio/ui": ["packages/ui/src/index.ts"]
+    }
   },
   "include": ["packages/*/src", "packages/*/test", "examples/*/src"]
 }

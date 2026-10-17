@@ -1,0 +1,15 @@
+{
+  "name": "@folio/ui",
+  "version": "0.0.1",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@folio/core": "0.0.1"
+  }
+}
