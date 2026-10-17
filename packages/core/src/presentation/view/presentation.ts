@@ -1,4 +1,5 @@
 import { isTextUnit, parseHtml, pathKey, stampPaths, PATH_ATTR, type ElementPath } from "../../dom";
+import { installUiStyles } from "./ui-styles";
 
 /** Elements a person can edit, provided they hold only text. Each becomes its own plain-text editor. */
 export const EDITABLE_TAGS: ReadonlySet<string> = new Set([
@@ -69,6 +70,7 @@ export class Presentation {
 
   constructor(root: HTMLElement) {
     this.root = root;
+    installUiStyles(root.ownerDocument);
     for (const name of RAW_EVENTS) if (name !== "selectionchange") this.#forward(root, name, true);
     this.#forwardSelectionChange();
   }

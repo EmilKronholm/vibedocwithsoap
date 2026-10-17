@@ -68,7 +68,7 @@ export class ReviewSession {
 
   /** The new document with its changes marked, for display. With the CSS undone, the old style sheets show. */
   displayHtml(): string {
-    const html = buildReviewHtml(this.base, this.proposal.html, this.diff);
+    const html = buildReviewHtml(this.base, this.proposal.html, this.diff, this.#rejected);
     if (!this.#rejectCss) return html;
     const oldStyles = Array.from(this.base.matchAll(STYLES), (m) => m[0]).join("\n");
     return oldStyles + html.replace(STYLES, "");

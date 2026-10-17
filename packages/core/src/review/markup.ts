@@ -1,6 +1,6 @@
 import { collectUnits } from "../dom";
 import type { Change, DocDiff, Unit } from "../diff";
-import { CHANGE_ATTR, GHOST_ATTR, KIND_ATTR } from "./attrs";
+import { CHANGE_ATTR, GHOST_ATTR, KIND_ATTR, REJECTED_ATTR } from "./attrs";
 import { parseBoth, removedRoot, unitsWithin, type Parsed } from "./parsed";
 import { placeRemoved } from "./placement";
 import { markWordDiff } from "./word-marks";
@@ -10,11 +10,19 @@ import { markWordDiff } from "./word-marks";
  * edited text as `<ins>` and `<del>`, new and moved units tagged, removed
  * content shown as a struck-through ghost where it used to be. Never stored.
  */
-export function buildReviewHtml(beforeHtml: string, afterHtml: string, diff: DocDiff): string {
+export function buildReviewHtml(beforeHtml: string, afterHtml: string, diff: DocDiff, rejected: ReadonlySet<string> = new Set()): string {
   const p = parseBoth(beforeHtml, afterHtml, diff);
   markPresent(p, diff);
   showRemoved(p, diff);
+  markRejected(p.newRoot, rejected);
   return p.newRoot.innerHTML;
+}
+
+// Anything that belongs to a change the person has undone, so the page can show it as undone.
+function markRejected(root: Element, rejected: ReadonlySet<string>): void {
+  for (const el of Array.from(root.querySelectorAll(`[${CHANGE_ATTR}]`))) {
+    if (rejected.has(el.getAttribute(CHANGE_ATTR) ?? "")) el.setAttribute(REJECTED_ATTR, "");
+  }
 }
 
 // Changes to things that still exist in the new document.

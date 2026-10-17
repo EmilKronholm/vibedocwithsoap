@@ -40,6 +40,10 @@ editor.on("status", (status) => {
   log(`status: ${status}`);
   refresh();
 });
+editor.on("review", (review) => {
+  log(review ? `review: ${review.changes.length} change(s) to decide` : "review ended");
+  refresh();
+});
 editor.on("notice", (notice) => log(`notice: ${notice.message}`));
 editor.on("selection", (path) => {
   log(`selected: ${path ? path.join(".") : "nothing"}`);
