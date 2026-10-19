@@ -46,6 +46,7 @@ Everything here was written without being run. Read [docs/known-issues.md](docs/
 
 | | |
 |---|---|
+| [docs/onboarding.md](docs/onboarding.md) | **Start here.** A chapter per folder: the problems, the alternatives, how it works, with diagrams |
 | [DESIGN.md](DESIGN.md) | The map: areas, flow, what is settled, decided and open |
 | [docs/architecture.md](docs/architecture.md) | How the code is arranged and why |
 | [docs/commands.md](docs/commands.md) | Every command |

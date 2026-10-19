@@ -2,7 +2,7 @@
 
 Folio is a library for building document editors where a person and an AI work on the same page. It is not an editor: it owns everything drawn on the page and everything that decides what may happen to the document. The chat, toolbar and panels belong to whoever embeds it.
 
-This file is the map. Details are in `docs/`.
+This file is the map. Details are in `docs/`; the long walk through every folder is [`docs/onboarding.md`](docs/onboarding.md).
 
 ## The three areas
 
