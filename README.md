@@ -36,6 +36,7 @@ Or as an element:
 ```bash
 npm install
 npm run dev          # the control-panel example
+npm run dev:showcase # every feature, one tab each, with scenarios to try
 npm run dev:web      # the <folio-editor> example
 npm test
 ```

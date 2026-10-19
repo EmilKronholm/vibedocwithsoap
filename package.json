@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "dev": "npm run dev -w examples/minimal",
+    "dev:showcase": "npm run dev -w examples/showcase",
     "dev:web": "npm run dev -w examples/web-component",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run"
