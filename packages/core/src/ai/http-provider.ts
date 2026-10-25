@@ -19,7 +19,8 @@ export function httpProvider(url: string, init: RequestInit = {}): AiProvider {
 }
 
 async function* readLines(body: ReadableStream<Uint8Array>): AsyncGenerator<AiEvent> {
-  const reader = body.pipeThrough(new TextDecoderStream()).getReader();
+  // The cast: newer DOM typings declare the decoder's input as BufferSource, which a Uint8Array stream no longer matches.
+  const reader = body.pipeThrough(new TextDecoderStream() as ReadableWritablePair<string, Uint8Array>).getReader();
   let buffer = "";
   for (;;) {
     const { value, done } = await reader.read();
