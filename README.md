@@ -4,6 +4,21 @@ A library for building document editors where a person and an AI work on the sam
 
 The AI writes and designs. The person checks and refines. Every AI change arrives as a revision to keep or undo, and what is on the page is exactly what prints. VibeDocWithSoap is not an editor: it owns everything drawn on the page and everything that decides what may happen to the document. The chat, toolbar and panels are yours.
 
+It is not a general-purpose document engine. It is made for vibecoding documents and then refining the content and word choices by hand.
+
+It was originally built for a CV generator, but it might also fit:
+
+- Invitation cards
+- Contracts
+- Brochures
+- Document formatting, once the content is already done
+
+## How it works
+
+The AI outputs HTML and CSS, so the design is limited only by its imagination. The person edits the allowed HTML tags through `contenteditable`. The result is an AI-made document that is easy for a human to edit.
+
+## Example
+
 ```ts
 import { createEditor } from "@vibedocwithsoap/core";
 
@@ -40,23 +55,6 @@ npm run dev:showcase # every feature, one tab each, with scenarios to try
 npm run dev:web      # the <vibedoc-editor> example
 npm test
 ```
-
-Everything here was written without being run. Read [docs/known-issues.md](docs/known-issues.md) first.
-
-## Where to read
-
-| | |
-|---|---|
-| [docs/onboarding.md](docs/onboarding.md) | **Start here.** A chapter per folder: the problems, the alternatives, how it works, with diagrams |
-| [DESIGN.md](DESIGN.md) | The map: areas, flow, what is settled, decided and open |
-| [docs/architecture.md](docs/architecture.md) | How the code is arranged and why |
-| [docs/commands.md](docs/commands.md) | Every command |
-| [docs/rules.md](docs/rules.md) | What a document may contain, and who may do what |
-| [docs/review-and-ai.md](docs/review-and-ai.md) | The AI contract, proposals, the diff |
-| [docs/rendering.md](docs/rendering.md) | Pages, printing, fonts |
-| [docs/decisions.md](docs/decisions.md) | Each decision and its reason |
-| [docs/known-issues.md](docs/known-issues.md) | What is risky or missing |
-| [docs/conventions.md](docs/conventions.md) | How code and comments are written |
 
 ## Packages
 
