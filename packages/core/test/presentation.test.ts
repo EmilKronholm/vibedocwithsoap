@@ -12,7 +12,7 @@ function setup(html: string) {
 describe("presentation", () => {
   it("stamps every element with its path", () => {
     const { container } = setup("<div><p>a</p><p>b</p></div>");
-    expect(container.querySelectorAll("p")[1].getAttribute("data-folio-path")).toBe("0.1");
+    expect(container.querySelectorAll("p")[1].getAttribute("data-vibedoc-path")).toBe("0.1");
   });
 
   it("marks the innermost text elements as units, not their containers", () => {
@@ -39,7 +39,7 @@ describe("presentation", () => {
 });
 
 describe("adapter events", () => {
-  it("reports a raw event as a folio event with the unit it happened in", () => {
+  it("reports a raw event as a vibedocwithsoap event with the unit it happened in", () => {
     const { adapter, container } = setup("<p>x</p>");
     const handler = vi.fn();
     adapter.on("click", handler);

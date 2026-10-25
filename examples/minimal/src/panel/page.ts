@@ -1,4 +1,4 @@
-import { PAPER_SIZES, readKnobs, type PaperSize } from "@folio/core";
+import { PAPER_SIZES, readKnobs, type PaperSize } from "@vibedocwithsoap/core";
 import { field, h, hex, hint, select } from "../dom";
 import { section, type PanelContext } from "./section";
 

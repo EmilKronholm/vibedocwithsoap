@@ -1,4 +1,4 @@
-import { heading, paragraph, textBox } from "@folio/core";
+import { heading, paragraph, textBox } from "@vibedocwithsoap/core";
 import type { Tab } from "../context";
 import { button, field, group, h, hint, row } from "../dom";
 

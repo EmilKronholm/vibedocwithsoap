@@ -1,4 +1,4 @@
-# Onboarding: how Folio works
+# Onboarding: how VibeDocWithSoap works
 
 This is the long version. It walks through every folder in `packages/core/src` (and the `ui` package and the examples) as a chapter. Each chapter says what the folder is for, what problem it exists to solve, what the alternatives were, how it works, and what to watch out for.
 
@@ -9,7 +9,7 @@ If you only have ten minutes, read **Part 1** and the three journeys. If you are
 ## Contents
 
 **Part 1: The big picture**
-- [What Folio is](#what-folio-is)
+- [What VibeDocWithSoap is](#what-vibedocwithsoap-is)
 - [The idea in one picture](#the-idea-in-one-picture)
 - [Three journeys](#three-journeys)
 - [How the folders depend on each other](#how-the-folders-depend-on-each-other)
@@ -53,9 +53,9 @@ If you only have ten minutes, read **Part 1** and the three journeys. If you are
 
 # Part 1: The big picture
 
-## What Folio is
+## What VibeDocWithSoap is
 
-Folio is a library for building **document editors where a person and an AI work on the same page**. Think of a CV builder, a contract editor, an invoice tool: documents that have a fixed look and fresh content each time.
+VibeDocWithSoap is a library for building **document editors where a person and an AI work on the same page**. Think of a CV builder, a contract editor, an invoice tool: documents that have a fixed look and fresh content each time.
 
 Three things are true about those products, and the whole design follows from them:
 
@@ -63,11 +63,11 @@ Three things are true about those products, and the whole design follows from th
 2. **The person must stay in control.** They check the numbers, fix a word, and approve what the AI did.
 3. **What you see must be what prints.** A CV that breaks differently on paper than on screen is a broken CV.
 
-So Folio is not "an editor". It is the layer that makes a document **safe for both of them to change**: one door every change goes through, a diff the person reviews before anything the AI did becomes real, rules about what a document may contain, and pages that match print. The toolbar, the chat and the panels are the host app's job.
+So VibeDocWithSoap is not "an editor". It is the layer that makes a document **safe for both of them to change**: one door every change goes through, a diff the person reviews before anything the AI did becomes real, rules about what a document may contain, and pages that match print. The toolbar, the chat and the panels are the host app's job.
 
 ### What the library does and does not do
 
-| Folio does | Folio does not |
+| VibeDocWithSoap does | VibeDocWithSoap does not |
 |---|---|
 | Draw the document on paper-sized pages | Draw your toolbar, chat or panels |
 | Take typing, Enter, Backspace, paste, undo | Call a model, hold an API key, write a prompt |
@@ -79,13 +79,13 @@ So Folio is not "an editor". It is the layer that makes a document **safe for bo
 
 ```mermaid
 flowchart TB
-  subgraph host["Your app (not Folio)"]
+  subgraph host["Your app (not VibeDocWithSoap)"]
     ui["Toolbar, chat, panels"]
     ai["AI function: request in, document out"]
     store["Storage: load and save JSON"]
   end
 
-  subgraph folio["Folio"]
+  subgraph vibedocwithsoap["VibeDocWithSoap"]
     editor["editor/  Editor facade"]
 
     subgraph view["Showing"]
@@ -153,7 +153,7 @@ sequenceDiagram
   participant M as Model
 
   B->>P: input event (the browser already changed the text)
-  P->>T: folio:input with the text element
+  P->>T: vibedocwithsoap:input with the text element
   Note over T: waits 400 ms of quiet, or until focus leaves
   T->>E: setText(path, text) marked as typing
   E->>C: dispatch(setText, human)
@@ -168,7 +168,7 @@ sequenceDiagram
 
 Things to notice:
 
-- **The browser edits the text, not Folio.** Each text element is `contenteditable="plaintext-only"`. Folio only notices afterwards and tells the model. This keeps the caret, spell check, selection and input methods working without rebuilding them.
+- **The browser edits the text, not VibeDocWithSoap.** Each text element is `contenteditable="plaintext-only"`. VibeDocWithSoap only notices afterwards and tells the model. This keeps the caret, spell check, selection and input methods working without rebuilding them.
 - **One command per pause, not per keystroke.** Otherwise history, versions and the diff would be flooded.
 - **The model is updated after the fact.** Typing is the one place where the page is ahead of the model for a few hundred milliseconds. Everything else is model first.
 
@@ -307,7 +307,7 @@ These four folders know nothing about editing, rules or pages. Everything above 
 | `event-bus.ts` | `EventBus<Events>`: named events with typed arguments, built from emitters. `bus.on("state", (state, previous) => ...)`. |
 | `id.ts` | `createId(prefix)`: a short unique id such as `v1k3x9a2b`. |
 
-**The problem.** Many parts of Folio have to tell others "something changed" (the model, the status, the review, autosave, the editor itself). Without a shared tool each one invents its own list of callbacks and its own way to unsubscribe.
+**The problem.** Many parts of VibeDocWithSoap have to tell others "something changed" (the model, the status, the review, autosave, the editor itself). Without a shared tool each one invents its own list of callbacks and its own way to unsubscribe.
 
 **Alternatives.**
 
@@ -339,7 +339,7 @@ flowchart LR
 | File | What it does |
 |---|---|
 | `parse.ts` | `parseHtml(html)` returns a detached `<div>` holding the parsed document. `toHtml(root)` is its `innerHTML`. `cleanModelHtml` strips a code fence or a doctype a model sometimes wraps around HTML. |
-| `paths.ts` | `ElementPath` (`[1, 0, 3]`), `elementPath(el, root)`, `elementAt(root, path)`, `pathKey`/`parsePathKey` (`"1.0.3"`), `stampPaths(root)` and `pathOfStamped(el)` (the `data-folio-path` attribute). |
+| `paths.ts` | `ElementPath` (`[1, 0, 3]`), `elementPath(el, root)`, `elementAt(root, path)`, `pathKey`/`parsePathKey` (`"1.0.3"`), `stampPaths(root)` and `pathOfStamped(el)` (the `data-vibedoc-path` attribute). |
 | `tags.ts` | The tag sets: which are replaced content (`IMG`, `SVG`...), skipped (`STYLE`, `SCRIPT`...), empty-but-editable (`P`, `H1`, `LI`...), and where Enter starts a new element (`PARAGRAPH_TAGS`). |
 | `units.ts` | `holdsOnlyText`, `isTextUnit`, `collectUnits(root)`, `blockIdOf`, `isSkipped`. Defines what a **unit** is. |
 | `text.ts` | `unitText(el)` reads a unit's text with `<br>` as `\n`. `setUnitText(el, text)` does the reverse. `normalizedText` collapses whitespace, for comparing versions. |
@@ -385,7 +385,7 @@ flowchart TB
 | A stable id on every element (`data-id`) | Survives moves and inserts, but every parse must assign ids, and when the AI replaces the whole HTML you need a matching step to carry ids over. Open question. |
 | An object reference to a DOM node | Cannot be sent, saved or used on a server. |
 
-Paths are good for the length of **one command**: the page and the model agree, the command is applied, and the result is read back. The page stamps every element with `data-folio-path` so an event can say which element it came from.
+Paths are good for the length of **one command**: the page and the model agree, the command is applied, and the result is read back. The page stamps every element with `data-vibedoc-path` so an event can say which element it came from.
 
 **The catch.** After a command that inserts or removes elements, every later path in the same parent is different. That is fine because the page is re-rendered (and re-stamped) from the new state before the next command. It would not be fine to keep a path for later.
 
@@ -404,7 +404,7 @@ flowchart TB
   end
 ```
 
-Why it matters: **three different parts of Folio agree on this one definition.** A person types in units. The diff compares units. The review marks units. If any of them disagreed, edits and changes would not line up.
+Why it matters: **three different parts of VibeDocWithSoap agree on this one definition.** A person types in units. The diff compares units. The review marks units. If any of them disagreed, edits and changes would not line up.
 
 `holdsOnlyText` is the looser version: "could hold typed text", even when empty. An empty `<span>` is not a unit (there is nothing to compare) but it can still be typed into, so `setText` uses `holdsOnlyText`.
 
@@ -1016,7 +1016,7 @@ flowchart LR
 
 | File | What it does |
 |---|---|
-| `attrs.ts` | The marker attributes: `data-folio-change`, `-kind`, `-rejected`, `-ghost`. |
+| `attrs.ts` | The marker attributes: `data-vibedoc-change`, `-kind`, `-rejected`, `-ghost`. |
 | `parsed.ts` | `parseBoth`: both documents parsed, with each old unit linked to the new element it became. `removedRoot`, `unitsWithin`. |
 | `placement.ts` | `placeRemoved`: where to put old content back in the new document. |
 | `apply-decisions.ts` | `applyDecisions`: the final document from the kept changes. |
@@ -1051,11 +1051,11 @@ Both are built from the **new** document, bringing old content back where needed
 | Change | What the page shows |
 |---|---|
 | Edited text | `<ins>` around inserted words and `<del>` with the deleted words put back where they were. |
-| Added | The element tagged `data-folio-kind="added"` (green bar). |
+| Added | The element tagged `data-vibedoc-kind="added"` (green bar). |
 | Moved | Tagged `moved` (blue bar). |
 | Formatting only | Tagged `restyled` (purple bar). |
 | Removed | A struck-through **ghost** copy of the old element, placed where it used to be. |
-| Undone by the person | `data-folio-rejected`: shown muted or hidden. |
+| Undone by the person | `data-vibedoc-rejected`: shown muted or hidden. |
 
 The CSS for these markers is in `presentation/view/ui-styles.ts`.
 
@@ -1290,7 +1290,7 @@ type AiProvider = (request: AiRequest, options: { signal: AbortSignal })
   => AsyncIterable<AiEvent> | Promise<AiResult>;
 ```
 
-Folio never knows what is behind it: a model, your backend, a local model, a person, a canned result in a test.
+VibeDocWithSoap never knows what is behind it: a model, your backend, a local model, a person, a canned result in a test.
 
 | Option | Verdict |
 |---|---|
@@ -1299,7 +1299,7 @@ Folio never knows what is behind it: a model, your backend, a local model, a per
 | Ship a server handler | The library should not decide your backend. |
 | **A function** (chosen) | The host chooses everything. The library defines the shapes and checks what comes back. |
 
-What Folio *does* give a host to help: `describeRules`, `describePage`, `readAiResult` (to validate a model's output), `httpProvider` (a reference client), and [review-and-ai.md](review-and-ai.md) for the document contract.
+What VibeDocWithSoap *does* give a host to help: `describeRules`, `describePage`, `readAiResult` (to validate a model's output), `httpProvider` (a reference client), and [review-and-ai.md](review-and-ai.md) for the document contract.
 
 ### The request and the result
 
@@ -1323,7 +1323,7 @@ flowchart LR
   req --> fn(["Your AI function"]) --> res
 ```
 
-`humanEdits` is how the AI is told "leave this alone": text the person typed since its last version. Folio then *checks* whether it did (the scope check).
+`humanEdits` is how the AI is told "leave this alone": text the person typed since its last version. VibeDocWithSoap then *checks* whether it did (the scope check).
 
 ### How a request runs
 
@@ -1377,7 +1377,7 @@ There is nothing to compare a brand new document with, so reviewing it change by
 
 ## Chapter 12: `persistence`
 
-**What it is.** How a host saves and loads a document, without Folio storing anything itself.
+**What it is.** How a host saves and loads a document, without VibeDocWithSoap storing anything itself.
 
 | File | What it does |
 |---|---|
@@ -1388,7 +1388,7 @@ There is nothing to compare a brand new document with, so reviewing it change by
 
 ### The problem
 
-Folio has no backend and wants none. But documents must be saved. And saving is full of traps: a save in flight when the next change arrives, a save that fails, a flood of saves while someone types.
+VibeDocWithSoap has no backend and wants none. But documents must be saved. And saving is full of traps: a save in flight when the next change arrives, a save that fails, a flood of saves while someone types.
 
 ### A store is two functions
 
@@ -1560,7 +1560,7 @@ For each page it clones the whole tree, finds the page's start and end elements 
 
 Both ends are found *before* anything is deleted, while the paths still lead to the right elements.
 
-A list cut between items becomes two lists, because the container is copied across pages. Every element keeps its `data-folio-path`, so a click or edit on page 3 still says where in the document it belongs.
+A list cut between items becomes two lists, because the container is copied across pages. Every element keeps its `data-vibedoc-path`, so a click or edit on page 3 still says where in the document it belongs.
 
 ### Measuring in the browser
 
@@ -1608,15 +1608,15 @@ presentation/
 | `pages-view.ts` | `buildSheets`: one sheet of paper per page. |
 | `ui-styles.ts` | `installUiStyles`: the baseline, the sheets and the review markers, installed once. |
 
-**`Presentation` in one paragraph.** It is given a container. `setHtml` or `setPages` replaces what is inside; every text unit (an element that holds only text and is one of the `EDITABLE_TAGS`) is marked `data-folio-unit` and made `contenteditable="plaintext-only"`. `unitOf(node)` finds the unit around a node, `byPath(path)` finds the element showing a document path, `setLocked(true)` removes editability (while the AI works), and every raw browser event inside it is passed on to listeners.
+**`Presentation` in one paragraph.** It is given a container. `setHtml` or `setPages` replaces what is inside; every text unit (an element that holds only text and is one of the `EDITABLE_TAGS`) is marked `data-vibedoc-unit` and made `contenteditable="plaintext-only"`. `unitOf(node)` finds the unit around a node, `byPath(path)` finds the element showing a document path, `setLocked(true)` removes editability (while the AI works), and every raw browser event inside it is passed on to listeners.
 
 ```mermaid
 flowchart TB
   state["state.html"] --> render["renderer"]
   render --> p["Presentation.setHtml or setPages"]
   p --> dom["DOM in the container"]
-  dom --> stamp["every element: data-folio-path"]
-  dom --> units["text units: data-folio-unit + contenteditable"]
+  dom --> stamp["every element: data-vibedoc-path"]
+  dom --> units["text units: data-vibedoc-unit + contenteditable"]
   dom --> events["raw events"]
   events --> listeners["listeners (the adapter)"]
 ```
@@ -1649,7 +1649,7 @@ Why `setAttribute` and then reading `contentEditable` back: assigning the proper
 
 | File | What it does |
 |---|---|
-| `presentation-adapter.ts` | `PresentationAdapter`: reports every raw event as a `folio:<name>` custom event with the original event and the text unit it happened in. |
+| `presentation-adapter.ts` | `PresentationAdapter`: reports every raw event as a `vibedocwithsoap:<name>` custom event with the original event and the text unit it happened in. |
 | `input-translator.ts` | `InputTranslator`: owns the handlers below. |
 | `text-committer.ts` | Typing becomes one `setText` after a pause. |
 | `key-handler.ts` | Enter, Backspace, Delete, undo, redo. |
@@ -1661,7 +1661,7 @@ Why `setAttribute` and then reading `contentEditable` back: assigning the proper
 ```mermaid
 flowchart TB
   dom["DOM events"] --> pres["Presentation"]
-  pres --> adapter["PresentationAdapter: folio:input, folio:keydown..."]
+  pres --> adapter["PresentationAdapter: vibedocwithsoap:input, vibedocwithsoap:keydown..."]
   adapter --> tc["TextCommitter"]
   adapter --> kh["KeyHandler"]
   adapter --> ph["PasteHandler"]
@@ -1670,7 +1670,7 @@ flowchart TB
   kh --> sink
 ```
 
-The adapter is **the one door between the DOM and the rest of Folio**: everything above it deals in commands, never in browser events. The events are not cancelable on purpose: the adapter reports, it does not decide. To cancel the browser's behaviour a handler calls `preventDefault()` on the *original* event.
+The adapter is **the one door between the DOM and the rest of VibeDocWithSoap**: everything above it deals in commands, never in browser events. The events are not cancelable on purpose: the adapter reports, it does not decide. To cancel the browser's behaviour a handler calls `preventDefault()` on the *original* event.
 
 ### Typing
 
@@ -1836,21 +1836,21 @@ createEditor({ container, html?, page?, snapshot?, rules?, renderer? })
 
 ## Chapter 16: `packages/ui`
 
-**What it is.** The framework-neutral way to use Folio: a `<folio-editor>` HTML element.
+**What it is.** The framework-neutral way to use VibeDocWithSoap: a `<vibedoc-editor>` HTML element.
 
 | File | What it does |
 |---|---|
-| `folio-editor.ts` | `FolioEditorElement`: the custom element. |
-| `index.ts` | `defineFolioElements()` registers it; importing the package registers it. |
+| `vibedoc-editor.ts` | `VibedocEditorElement`: the custom element. |
+| `index.ts` | `defineVibedocElements()` registers it; importing the package registers it. |
 
 ```html
-<folio-editor></folio-editor>
+<vibedoc-editor></vibedoc-editor>
 <script type="module">
-  import "@folio/ui";
-  const el = document.querySelector("folio-editor");
+  import "@vibedocwithsoap/ui";
+  const el = document.querySelector("vibedoc-editor");
   el.html = "<h1>Hello</h1>";
   el.rules = { content: "rich" };
-  el.addEventListener("folio-state", (e) => save(e.detail.state));
+  el.addEventListener("vibedoc-state", (e) => save(e.detail.state));
 </script>
 ```
 
@@ -1858,16 +1858,16 @@ createEditor({ container, html?, page?, snapshot?, rules?, renderer? })
 
 ```mermaid
 flowchart LR
-  attr["Properties set: html, rules, ai, snapshot"] --> el["FolioEditorElement"]
+  attr["Properties set: html, rules, ai, snapshot"] --> el["VibedocEditorElement"]
   el -- "connected to the page" --> create["createEditor(container = the element itself)"]
   create --> editor["Editor"]
-  editor -- "state, status, review, notice, selection" --> events["folio-* CustomEvents on the element"]
+  editor -- "state, status, review, notice, selection" --> events["vibedoc-* CustomEvents on the element"]
   el -- "element.editor" --> host["host drives it: dispatch, compose, print"]
 ```
 
 - Properties set **before** the element is connected are its starting configuration (`html` becomes the initial document).
 - Set **after**, `rules` and `ai` are applied directly; `html` becomes a `replaceAll` command (a person's change, so the rules apply); `snapshot` restarts the editor.
-- Each editor event is re-dispatched as `folio-<name>` with its arguments in `detail`, and bubbles.
+- Each editor event is re-dispatched as `vibedoc-<name>` with its arguments in `detail`, and bubbles.
 - `element.editor` exposes the whole `Editor` for anything the properties do not cover.
 
 ### Decisions
@@ -1886,7 +1886,7 @@ flowchart LR
 
 ## Chapter 17: `examples`
 
-These exist to try things quickly. They are **not** what Folio offers, and may be rough.
+These exist to try things quickly. They are **not** what VibeDocWithSoap offers, and may be rough.
 
 ### `examples/minimal`: a control panel
 
@@ -1906,7 +1906,7 @@ Each panel section is `section(title, build)`: it rebuilds on every editor event
 
 ### `examples/web-component`
 
-The smallest use of `<folio-editor>`: set `html` and `rules`, listen to `folio-state`, call `undo` and `print` through `element.editor`.
+The smallest use of `<vibedoc-editor>`: set `html` and `rules`, listen to `vibedoc-state`, call `undo` and `print` through `element.editor`.
 
 ### The Claude provider
 
@@ -1965,7 +1965,7 @@ The smallest use of `<folio-editor>`: set `html` and `rules`, listen to `folio-s
 
 ### A new event on the editor
 
-Add it to `editor/events.ts`, emit it in `editor/editor.ts`, forward it in `packages/ui/src/folio-editor.ts`.
+Add it to `editor/events.ts`, emit it in `editor/editor.ts`, forward it in `packages/ui/src/vibedoc-editor.ts`.
 
 ### A new way to save
 
@@ -1995,7 +1995,7 @@ Add it to `RAW_EVENTS` in `presentation/view/presentation.ts`. Handle it with `a
 
 **Review HTML is not the state.** While reviewing, the page shows `displayHtml()` (changes marked, ghost copies of removed content). The state is still the unchanged document. A person's click during review would hit marked-up elements whose paths mean nothing; that is why editing is locked.
 
-**`data-folio-path` appears in two places.** On the live page (stamped by `Presentation.setHtml`, or inherited from the probe in paged mode), and in the print document (copied along, harmless). It is never in the stored state.
+**`data-vibedoc-path` appears in two places.** On the live page (stamped by `Presentation.setHtml`, or inherited from the probe in paged mode), and in the print document (copied along, harmless). It is never in the stored state.
 
 **The sanitiser runs more than once.** On the starting document, after every command, on every AI result. That is intentional: each is a place content enters, and cleaning is idempotent.
 

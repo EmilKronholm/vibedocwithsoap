@@ -1,6 +1,6 @@
 import { Presentation, type RawEventName } from "../view/presentation";
 
-export const EVENT_PREFIX = "folio:";
+export const EVENT_PREFIX = "vibedocwithsoap:";
 
 export interface PresentationEventDetail {
   /** The browser's own event, untouched. */
@@ -12,8 +12,8 @@ export interface PresentationEventDetail {
 export type PresentationEvent = CustomEvent<PresentationEventDetail>;
 
 /**
- * The one door between the DOM and the rest of Folio. Puts HTML on the page
- * and reports every raw browser event as a `folio:<name>` custom event.
+ * The one door between the DOM and the rest of VibeDocWithSoap. Puts HTML on the page
+ * and reports every raw browser event as a `vibedocwithsoap:<name>` custom event.
  */
 export class PresentationAdapter extends EventTarget {
   readonly presentation: Presentation;

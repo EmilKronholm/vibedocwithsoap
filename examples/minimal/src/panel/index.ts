@@ -1,4 +1,4 @@
-import { isFailure, type Command, type Editor } from "@folio/core";
+import { isFailure, type Command, type Editor } from "@vibedocwithsoap/core";
 import { aiSection } from "./ai";
 import { exportSection } from "./export";
 import { historySection } from "./history";

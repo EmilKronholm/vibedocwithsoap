@@ -1,11 +1,11 @@
-import { FolioEditorElement } from "./folio-editor";
+import { VibedocEditorElement } from "./vibedoc-editor";
 
-export { FolioEditorElement, type FolioElementEventMap } from "./folio-editor";
+export { VibedocEditorElement, type VibedocElementEventMap } from "./vibedoc-editor";
 
-/** Registers `<folio-editor>`. Safe to call more than once, and does nothing where there is no DOM. */
-export function defineFolioElements(): void {
+/** Registers `<vibedoc-editor>`. Safe to call more than once, and does nothing where there is no DOM. */
+export function defineVibedocElements(): void {
   if (typeof customElements === "undefined") return;
-  if (!customElements.get("folio-editor")) customElements.define("folio-editor", FolioEditorElement);
+  if (!customElements.get("vibedoc-editor")) customElements.define("vibedoc-editor", VibedocEditorElement);
 }
 
-defineFolioElements();
+defineVibedocElements();

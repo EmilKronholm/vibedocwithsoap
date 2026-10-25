@@ -5,7 +5,7 @@ import { defineConfig } from "vite";
 export default defineConfig({
   resolve: {
     alias: {
-      "@folio/core": fileURLToPath(new URL("../../packages/core/src/index.ts", import.meta.url)),
+      "@vibedocwithsoap/core": fileURLToPath(new URL("../../packages/core/src/index.ts", import.meta.url)),
     },
   },
   server: { port: 5190, strictPort: true },

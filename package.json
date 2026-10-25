@@ -1,5 +1,5 @@
 {
-  "name": "folio2-monorepo",
+  "name": "vibedocwithsoap-monorepo",
   "private": true,
   "type": "module",
   "workspaces": [

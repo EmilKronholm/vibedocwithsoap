@@ -1,4 +1,4 @@
-import { isFailure, type Actor, type Command, type EditResult, type Editor, type ElementPath } from "@folio/core";
+import { isFailure, type Actor, type Command, type EditResult, type Editor, type ElementPath } from "@vibedocwithsoap/core";
 import type { Child } from "./dom";
 
 /** What every tab can use. */
@@ -39,8 +39,8 @@ export function createCtx(editor: Editor, parts: { say: Ctx["say"]; log: Ctx["lo
 
   const targetPath = (): ElementPath | null => {
     if (editor.selection) return editor.selection;
-    const first = editor.presentation.root.querySelector("[data-folio-unit]");
-    const key = first?.getAttribute("data-folio-path");
+    const first = editor.presentation.root.querySelector("[data-vibedoc-unit]");
+    const key = first?.getAttribute("data-vibedoc-path");
     return key ? key.split(".").map(Number) : null;
   };
 

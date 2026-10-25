@@ -1,4 +1,4 @@
-import type { AiProvider, AiRequest, AiResult } from "@folio/core";
+import type { AiProvider, AiRequest, AiResult } from "@vibedocwithsoap/core";
 import { escape, parse, wait } from "./wait";
 
 /** The instructions the friendly mock understands, shown as buttons in the AI tab. */

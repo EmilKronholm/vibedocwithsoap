@@ -1,4 +1,4 @@
-import type { Editor } from "@folio/core";
+import type { Editor } from "@vibedocwithsoap/core";
 import { createCtx, type Ctx } from "./context";
 import { button, h } from "./dom";
 import { saveState } from "./save-state";

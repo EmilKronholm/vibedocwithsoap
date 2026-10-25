@@ -4,7 +4,7 @@ import { button, group, hint, row, warn } from "../dom";
 export const editTab: Tab = {
   id: "edit",
   title: "Edit",
-  intro: "Typing is native: the browser edits the text, Folio only notices. A few keys are taken over where the browser would change the structure behind the model's back.",
+  intro: "Typing is native: the browser edits the text, VibeDocWithSoap only notices. A few keys are taken over where the browser would change the structure behind the model's back.",
   build: ({ editor }) => [
     editor.plaintextOnlySupported ? null : warn("This browser cannot edit as plain text, so the page is read-only."),
     group(
@@ -13,7 +13,7 @@ export const editTab: Tab = {
       hint("Enter in a paragraph or list item starts a new one. Shift+Enter breaks the line instead."),
       hint("Backspace at the very start joins with the paragraph above (only the same kind; a heading never swallows a paragraph)."),
       hint("Paste text from anywhere: only plain text arrives, so no formatting or markup can sneak in."),
-      hint("Ctrl+Z and Ctrl+Y use Folio's history, not the browser's."),
+      hint("Ctrl+Z and Ctrl+Y use VibeDocWithSoap's history, not the browser's."),
     ),
     group(
       "What the editor knows",
@@ -22,8 +22,8 @@ export const editTab: Tab = {
       hint(`Versions kept: ${editor.versions.length}`),
     ),
     row(button("Put the caret in the first paragraph", () => {
-      const first = editor.presentation.root.querySelector("p[data-folio-unit]");
-      const key = first?.getAttribute("data-folio-path");
+      const first = editor.presentation.root.querySelector("p[data-vibedoc-unit]");
+      const key = first?.getAttribute("data-vibedoc-path");
       if (key) editor.focus(key.split(".").map(Number));
     })),
   ],

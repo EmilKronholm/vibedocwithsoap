@@ -1,4 +1,4 @@
-import type { DocumentRules } from "@folio/core";
+import type { DocumentRules } from "@vibedocwithsoap/core";
 
 /** Rule sets to try. A real product usually has one, fixed by what it is for. */
 export const RULE_SETS: Record<string, DocumentRules | undefined> = {

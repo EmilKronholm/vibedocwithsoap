@@ -41,10 +41,10 @@ Each is a choice made while building, with the reason. Change any of them; the r
 
 ## Saving
 
-23. **A store is anything that loads and saves one snapshot of JSON.** Folio keeps nothing itself.
+23. **A store is anything that loads and saves one snapshot of JSON.** VibeDocWithSoap keeps nothing itself.
 24. **Autosave never overlaps saves.** A change during a save is saved right after, so the store ends with the latest document. A failed save is reported and retried on the next change.
 
 ## Packaging
 
-25. **Two packages.** `@folio/core` holds everything; `@folio/ui` is the `<folio-editor>` web component. A React wrapper is not written.
+25. **Two packages.** `@vibedocwithsoap/core` holds everything; `@vibedocwithsoap/ui` is the `<vibedoc-editor>` web component. A React wrapper is not written.
 26. **The web component draws into itself (no shadow DOM).** The document's CSS and the library's baseline would not reach into a shadow root.

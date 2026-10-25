@@ -53,4 +53,4 @@ Notes and comments on text or areas of the page, compose from named sources and 
 ## The examples
 
 - `examples/minimal` has an AI section with a mock provider and a Claude provider that calls the API **directly from the browser** with a key typed into the page. That is only acceptable for a demo on your own machine; the file says so, and it belongs on a server.
-- `examples/web-component` is the smallest use of `<folio-editor>`.
+- `examples/web-component` is the smallest use of `<vibedoc-editor>`.

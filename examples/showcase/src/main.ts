@@ -1,4 +1,4 @@
-import { createEditor } from "@folio/core";
+import { createEditor } from "@vibedocwithsoap/core";
 import { SAMPLE } from "./sample";
 import { saveState } from "./save-state";
 import { mountShell } from "./shell";

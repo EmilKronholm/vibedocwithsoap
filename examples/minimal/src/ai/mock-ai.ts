@@ -1,4 +1,4 @@
-import type { AiProvider, AiRequest, AiResult } from "@folio/core";
+import type { AiProvider, AiRequest, AiResult } from "@vibedocwithsoap/core";
 
 /** A pretend AI, so the whole flow can be tried without a key or a server. */
 export function mockAi(): AiProvider {

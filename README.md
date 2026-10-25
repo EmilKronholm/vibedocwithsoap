@@ -1,11 +1,11 @@
-# Folio
+# VibeDocWithSoap
 
 A library for building document editors where a person and an AI work on the same page.
 
-The AI writes and designs. The person checks and refines. Every AI change arrives as a revision to keep or undo, and what is on the page is exactly what prints. Folio is not an editor: it owns everything drawn on the page and everything that decides what may happen to the document. The chat, toolbar and panels are yours.
+The AI writes and designs. The person checks and refines. Every AI change arrives as a revision to keep or undo, and what is on the page is exactly what prints. VibeDocWithSoap is not an editor: it owns everything drawn on the page and everything that decides what may happen to the document. The chat, toolbar and panels are yours.
 
 ```ts
-import { createEditor } from "@folio/core";
+import { createEditor } from "@vibedocwithsoap/core";
 
 const editor = createEditor({ container: document.querySelector("#page")!, html: "<h1>Hello</h1><p>Type here.</p>" });
 
@@ -22,12 +22,12 @@ await editor.print();                            // the same pages as on screen
 Or as an element:
 
 ```html
-<folio-editor></folio-editor>
+<vibedoc-editor></vibedoc-editor>
 <script type="module">
-  import "@folio/ui";
-  const el = document.querySelector("folio-editor");
+  import "@vibedocwithsoap/ui";
+  const el = document.querySelector("vibedoc-editor");
   el.html = "<h1>Hello</h1>";
-  el.addEventListener("folio-state", (e) => save(e.detail.state));
+  el.addEventListener("vibedoc-state", (e) => save(e.detail.state));
 </script>
 ```
 
@@ -37,7 +37,7 @@ Or as an element:
 npm install
 npm run dev          # the control-panel example
 npm run dev:showcase # every feature, one tab each, with scenarios to try
-npm run dev:web      # the <folio-editor> example
+npm run dev:web      # the <vibedoc-editor> example
 npm test
 ```
 
@@ -60,10 +60,10 @@ Everything here was written without being run. Read [docs/known-issues.md](docs/
 
 ## Packages
 
-- `@folio/core`: the editor and everything under it.
-- `@folio/ui`: the `<folio-editor>` web component.
+- `@vibedocwithsoap/core`: the editor and everything under it.
+- `@vibedocwithsoap/ui`: the `<vibedoc-editor>` web component.
 
-The examples in `examples/` are for trying things out. They are not what Folio offers.
+The examples in `examples/` are for trying things out. They are not what VibeDocWithSoap offers.
 
 ## License
 

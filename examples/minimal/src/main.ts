@@ -1,4 +1,4 @@
-import { LocalStorageStore, createEditor } from "@folio/core";
+import { LocalStorageStore, createEditor } from "@vibedocwithsoap/core";
 import { h } from "./dom";
 import { createPanel } from "./panel";
 import { SAMPLE } from "./sample";
@@ -7,7 +7,7 @@ const page = document.querySelector<HTMLElement>("#page")!;
 const panel = document.querySelector<HTMLElement>("#panel")!;
 
 // The document is kept in this browser. Any other store works the same way: load a snapshot, hand it back.
-const store = new LocalStorageStore("folio-example-document");
+const store = new LocalStorageStore("vibedoc-example-document");
 const editor = createEditor({ container: page, html: SAMPLE, snapshot: (await store.load()) ?? undefined });
 const autosave = editor.autosave(store);
 const saved = h("small", { style: "padding: 0 14px" }, "");

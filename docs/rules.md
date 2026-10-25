@@ -49,4 +49,4 @@ A text element holds plain text in one style: no bold word inside a sentence. Mi
 
 ## Telling a model
 
-`describeRules(rules)` returns the rules as plain sentences for a prompt. Folio does not send it anywhere; the rules are enforced on whatever comes back either way. Every `AiRequest` also carries `rules`.
+`describeRules(rules)` returns the rules as plain sentences for a prompt. VibeDocWithSoap does not send it anywhere; the rules are enforced on whatever comes back either way. Every `AiRequest` also carries `rules`.

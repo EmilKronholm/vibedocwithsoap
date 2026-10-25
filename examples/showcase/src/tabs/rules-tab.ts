@@ -1,4 +1,4 @@
-import { describeRules, heading, textBox, type DocumentRules } from "@folio/core";
+import { describeRules, heading, textBox, type DocumentRules } from "@vibedocwithsoap/core";
 import type { Ctx, Tab } from "../context";
 import { button, field, group, hint, row, select } from "../dom";
 import { RULE_SETS } from "../rules";

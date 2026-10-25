@@ -1,4 +1,4 @@
-import type { AiProvider, AiRequest, AiResult } from "@folio/core";
+import type { AiProvider, AiRequest, AiResult } from "@vibedocwithsoap/core";
 import { parse, wait } from "./wait";
 
 /**

@@ -112,7 +112,7 @@ describe("splitting", () => {
     const root = parseHtml(`<div>${para(100, "a")}${para(100, "b")}</div>`);
     stampPaths(root);
     const pages = paginate(root, 150, stacked(root));
-    expect(pages[1].querySelector("p")?.getAttribute("data-folio-path")).toBe("0.1");
+    expect(pages[1].querySelector("p")?.getAttribute("data-vibedoc-path")).toBe("0.1");
   });
 });
 
@@ -121,7 +121,7 @@ describe("printing", () => {
 
   it("lays out one sheet per page at the paper's size", () => {
     const html = buildPrintableHtml([page("one"), page("two")], DEFAULT_PAGE, { title: "Report" });
-    expect(html.match(/folio-print-page folio-doc/g)).toHaveLength(2);
+    expect(html.match(/vibedoc-print-page vibedoc-doc/g)).toHaveLength(2);
     expect(html).toContain("@page { size: 210mm 297mm; margin: 0; }");
     expect(html).toContain("<title>Report</title>");
   });

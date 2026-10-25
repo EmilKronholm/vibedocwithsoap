@@ -1,6 +1,6 @@
-import { LocalStorageStore } from "@folio/core";
+import { LocalStorageStore } from "@vibedocwithsoap/core";
 
-export const SAVE_KEY = "folio-showcase-document";
+export const SAVE_KEY = "vibedoc-showcase-document";
 
 /** Where the document is kept, and how the last save went. Shared by main.ts and the Save tab. */
 export const saveState = {

@@ -1,4 +1,4 @@
-import type { AiProvider } from "@folio/core";
+import type { AiProvider } from "@vibedocwithsoap/core";
 import { claudeAi } from "./claude";
 import { friendlyAi } from "./friendly";
 import { misbehavingAi } from "./misbehaving";

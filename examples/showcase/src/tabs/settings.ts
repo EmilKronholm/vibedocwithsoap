@@ -1,11 +1,11 @@
-import { PAPER_SIZES, readKnobs, type Margins, type PaperSize } from "@folio/core";
+import { PAPER_SIZES, readKnobs, type Margins, type PaperSize } from "@vibedocwithsoap/core";
 import type { Ctx, Tab } from "../context";
 import { field, group, h, hex, hint, row, select } from "../dom";
 
 export const settingsTab: Tab = {
   id: "settings",
   title: "Settings",
-  intro: "Two kinds of settings. The document declares its own (the AI decides what is worth adjusting). The page is Folio's: paper, margins, colour.",
+  intro: "Two kinds of settings. The document declares its own (the AI decides what is worth adjusting). The page is VibeDocWithSoap's: paper, margins, colour.",
   build: (ctx) => [documentSettings(ctx), pageSettings(ctx)],
 };
 

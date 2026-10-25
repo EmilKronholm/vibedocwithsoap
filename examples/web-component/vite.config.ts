@@ -5,6 +5,6 @@ import { defineConfig } from "vite";
 const source = (pkg: string) => fileURLToPath(new URL(`../../packages/${pkg}/src/index.ts`, import.meta.url));
 
 export default defineConfig({
-  resolve: { alias: { "@folio/core": source("core"), "@folio/ui": source("ui") } },
+  resolve: { alias: { "@vibedocwithsoap/core": source("core"), "@vibedocwithsoap/ui": source("ui") } },
   server: { port: 5191, strictPort: true },
 });

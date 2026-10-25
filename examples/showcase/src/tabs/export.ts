@@ -20,7 +20,7 @@ export const exportTab: Tab = {
         }),
         button("Count its pages", async () => {
           const html = await editor.printableHtml();
-          say(`${(html.match(/folio-print-page folio-doc/g) ?? []).length} page(s), ${(html.length / 1024).toFixed(0)} KB of HTML`, true);
+          say(`${(html.match(/vibedoc-print-page vibedoc-doc/g) ?? []).length} page(s), ${(html.length / 1024).toFixed(0)} KB of HTML`, true);
         }),
       ),
       hint("This is the same HTML you would post to a headless Chrome for a real PDF file: one sheet per page, exact paper size, and a Content Security Policy that stops it loading anything unexpected."),

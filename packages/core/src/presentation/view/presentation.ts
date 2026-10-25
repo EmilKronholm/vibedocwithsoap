@@ -24,7 +24,7 @@ export const EDITABLE_TAGS: ReadonlySet<string> = new Set([
 ]);
 
 /** Marks an editable element, whether or not the browser can edit it. */
-export const UNIT_ATTR = "data-folio-unit";
+export const UNIT_ATTR = "data-vibedoc-unit";
 
 /** Browser events forwarded to listeners. `selectionchange` is forwarded only when the selection is inside the presentation. */
 export const RAW_EVENTS = [

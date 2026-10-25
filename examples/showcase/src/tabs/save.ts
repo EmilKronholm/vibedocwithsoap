@@ -1,4 +1,4 @@
-import { parseSnapshot } from "@folio/core";
+import { parseSnapshot } from "@vibedocwithsoap/core";
 import type { Tab } from "../context";
 import { button, group, h, hint, row } from "../dom";
 import { SAVE_KEY, saveState } from "../save-state";
@@ -13,7 +13,7 @@ function download(name: string, text: string): void {
 export const saveTab: Tab = {
   id: "save",
   title: "Save",
-  intro: "Folio stores nothing. It hands you one snapshot of plain JSON (the document and its versions) and takes one back. A store is anything that can load and save it.",
+  intro: "VibeDocWithSoap stores nothing. It hands you one snapshot of plain JSON (the document and its versions) and takes one back. A store is anything that can load and save it.",
   build: ({ editor, say }) => {
     const json = JSON.stringify(editor.snapshot());
     return [
@@ -22,7 +22,7 @@ export const saveTab: Tab = {
         "The snapshot",
         hint(`${(json.length / 1024).toFixed(1)} KB of JSON, ${editor.versions.length} version(s).`),
         row(
-          button("Download as a file", () => download("folio-document.json", JSON.stringify(editor.snapshot(), null, 2))),
+          button("Download as a file", () => download("vibedoc-document.json", JSON.stringify(editor.snapshot(), null, 2))),
           h("label", { class: "act", style: "padding: 4px 10px; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer" }, "Load from a file…", h("input", {
             type: "file",
             accept: "application/json",
@@ -34,7 +34,7 @@ export const saveTab: Tab = {
                 await saveState.store.save(parseSnapshot(await file.text()));
                 location.reload();
               } catch (error) {
-                say(`That file is not a Folio document: ${error instanceof Error ? error.message : error}`, false);
+                say(`That file is not a VibeDocWithSoap document: ${error instanceof Error ? error.message : error}`, false);
               }
             },
           })),

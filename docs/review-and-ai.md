@@ -8,7 +8,7 @@ A function you give the editor:
 editor.ai = async (request, { signal }) => ({ html, summary, scope, targets });
 ```
 
-It receives an `AiRequest` (the document, the instruction, the page, the rules, text the person typed since the AI's last version) and returns the whole document with a summary and what it says it changed. It can also return an async stream of `AiEvent`s to report progress. `httpProvider(url)` is one that talks to your own backend. What is behind the function is not Folio's business, and no prompt or model call ships in the library.
+It receives an `AiRequest` (the document, the instruction, the page, the rules, text the person typed since the AI's last version) and returns the whole document with a summary and what it says it changed. It can also return an async stream of `AiEvent`s to report progress. `httpProvider(url)` is one that talks to your own backend. What is behind the function is not VibeDocWithSoap's business, and no prompt or model call ships in the library.
 
 ## compose and revise
 

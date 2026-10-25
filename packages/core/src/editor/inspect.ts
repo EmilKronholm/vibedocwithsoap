@@ -36,7 +36,7 @@ export function describeElement(el: HTMLElement, path: ElementPath): ElementInfo
   const view = el.ownerDocument.defaultView;
   const style = view ? view.getComputedStyle(el) : null;
   const computed = Object.fromEntries(STYLE_PROPS.map((prop) => [prop, style?.getPropertyValue(prop) ?? ""])) as Record<StyleProp, string>;
-  const holdsText = el.hasAttribute("data-folio-unit");
+  const holdsText = el.hasAttribute("data-vibedoc-unit");
 
   return {
     path,

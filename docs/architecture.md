@@ -1,6 +1,6 @@
 # Architecture
 
-Folio is a library for building document editors where a person and an AI work on the same page. This describes how the code in `packages/core` is arranged and why.
+VibeDocWithSoap is a library for building document editors where a person and an AI work on the same page. This describes how the code in `packages/core` is arranged and why.
 
 ## Three areas
 
@@ -58,7 +58,7 @@ The AI uses the same door. Its result is never written to the model directly. It
 
 The state is `{ html, page }`. The document is an HTML string; the DOM is only a way to read it (`dom/parse.ts`) and to show it (`presentation/`). Versions and undo history are kept beside the state, not inside it. `model/snapshot.ts` is the plain-JSON form of the state plus versions that a host saves.
 
-Elements are addressed by **path**: the child indexes from the root, such as `[1, 0, 3]`. A command is applied right after the page and the model agree, so a path is good for the length of one command. Every element on the page carries its path as `data-folio-path`.
+Elements are addressed by **path**: the child indexes from the root, such as `[1, 0, 3]`. A command is applied right after the page and the model agree, so a path is good for the length of one command. Every element on the page carries its path as `data-vibedoc-path`.
 
 ## Typing
 

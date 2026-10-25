@@ -1,6 +1,6 @@
-# Folio design
+# VibeDocWithSoap design
 
-Folio is a library for building document editors where a person and an AI work on the same page. It is not an editor: it owns everything drawn on the page and everything that decides what may happen to the document. The chat, toolbar and panels belong to whoever embeds it.
+VibeDocWithSoap is a library for building document editors where a person and an AI work on the same page. It is not an editor: it owns everything drawn on the page and everything that decides what may happen to the document. The chat, toolbar and panels belong to whoever embeds it.
 
 This file is the map. Details are in `docs/`; the long walk through every folder is [`docs/onboarding.md`](docs/onboarding.md).
 
@@ -66,8 +66,8 @@ Everything is written and nothing has been run. See [`docs/known-issues.md`](doc
 
 ```
 packages/core   everything: model, editing, rules, rendering, presentation, ai, persistence, editor
-packages/ui     <folio-editor> web component over core
-examples/*      throwaway apps for trying things; not part of what Folio offers
+packages/ui     <vibedoc-editor> web component over core
+examples/*      throwaway apps for trying things; not part of what VibeDocWithSoap offers
 docs/           architecture, commands, rules, review and AI, rendering, decisions, known issues
 ```
 

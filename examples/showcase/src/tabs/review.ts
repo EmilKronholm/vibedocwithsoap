@@ -1,4 +1,4 @@
-import type { ReviewChange } from "@folio/core";
+import type { ReviewChange } from "@vibedocwithsoap/core";
 import type { Tab } from "../context";
 import { button, group, h, hint, row, warn } from "../dom";
 

@@ -1,4 +1,4 @@
-import { isFailure } from "@folio/core";
+import { isFailure } from "@vibedocwithsoap/core";
 import { FRIENDLY_PRESETS } from "../ai/friendly";
 import { PROVIDERS } from "../ai/providers";
 import type { Ctx, Tab } from "../context";

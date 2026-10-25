@@ -1,4 +1,4 @@
-import type { Command, Editor } from "@folio/core";
+import type { Command, Editor } from "@vibedocwithsoap/core";
 import { h, type Child } from "../dom";
 
 export interface Section {

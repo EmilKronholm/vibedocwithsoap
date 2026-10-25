@@ -51,8 +51,8 @@ function printCss(page: PageSetup): string {
 @page { size: ${width}mm ${height}mm; margin: 0; }
 html, body { margin: 0; padding: 0; }
 html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-.folio-print-page { position: relative; overflow: hidden; break-after: page; }
-.folio-print-page:last-child { break-after: auto; }
+.vibedoc-print-page { position: relative; overflow: hidden; break-after: page; }
+.vibedoc-print-page:last-child { break-after: auto; }
 `;
 }
 
@@ -61,5 +61,5 @@ function sheet(root: HTMLElement, page: PageSetup, last: boolean): string {
   const { top, right, bottom, left } = g.margin;
   // One pixel under the sheet, so rounding can never push a blank page after the last one.
   const style = `width:${g.width}px;height:${g.height - (last ? 1 : 0)}px;padding:${top}px ${right}px ${bottom}px ${left}px;background:${safeColor(page.background)};`;
-  return `<section class="folio-print-page ${DOC_CLASS}" style="${style}">${root.innerHTML}</section>`;
+  return `<section class="vibedoc-print-page ${DOC_CLASS}" style="${style}">${root.innerHTML}</section>`;
 }

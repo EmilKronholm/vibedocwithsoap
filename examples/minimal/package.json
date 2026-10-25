@@ -1,12 +1,12 @@
 {
-  "name": "folio2-example-minimal",
+  "name": "vibedocwithsoap-example-minimal",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite"
   },
   "dependencies": {
-    "@folio/core": "0.0.1"
+    "@vibedocwithsoap/core": "0.0.1"
   },
   "devDependencies": {
     "vite": "^8.3.2"

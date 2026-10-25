@@ -1,7 +1,7 @@
 /** Child-element indexes from a root down to an element: `[1, 0, 3]`. */
 export type ElementPath = readonly number[];
 
-export const PATH_ATTR = "data-folio-path";
+export const PATH_ATTR = "data-vibedoc-path";
 
 export function elementPath(el: Element, root: Element): ElementPath {
   const steps: number[] = [];

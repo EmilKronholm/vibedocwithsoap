@@ -1,4 +1,4 @@
-import { isFailure } from "@folio/core";
+import { isFailure } from "@vibedocwithsoap/core";
 import { claudeAi } from "../ai/claude-ai";
 import { mockAi } from "../ai/mock-ai";
 import { button, field, h, hint, row, select } from "../dom";

@@ -3,16 +3,16 @@
  * The browser calls Anthropic directly with a key the person types in. That is
  * only acceptable for a demo on your own machine: anyone who can open this page
  * can read the key. In a real app the browser calls YOUR route
- * (`httpProvider("/api/folio")`) and your server holds the key, checks who is
+ * (`httpProvider("/api/vibedoc")`) and your server holds the key, checks who is
  * asking, and makes this same call.
  */
 
-import { describePage, describeRules, readAiResult, type AiProvider, type AiRequest } from "@folio/core";
+import { describePage, describeRules, readAiResult, type AiProvider, type AiRequest } from "@vibedocwithsoap/core";
 
 const MODEL = "claude-sonnet-5-5";
-const KEY_STORAGE = "folio-showcase-key";
+const KEY_STORAGE = "vibedoc-showcase-key";
 
-const SYSTEM = `You write and revise documents for Folio, an editor where a person reviews every change you make.
+const SYSTEM = `You write and revise documents for VibeDocWithSoap, an editor where a person reviews every change you make.
 Deliver the document by calling write_document exactly once.
 The document is an HTML fragment: a <style> element, then content. No <html>, <head> or <body>.
 - Every element that holds text holds plain text in one style: no <strong>, <em> or <a> inside a sentence. Use separate elements instead.

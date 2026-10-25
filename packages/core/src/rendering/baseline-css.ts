@@ -1,5 +1,5 @@
 /** The class on every element that holds a document: on the page, while measuring, and in print. */
-export const DOC_CLASS = "folio-doc";
+export const DOC_CLASS = "vibedoc-doc";
 
 /**
  * What the browser would otherwise decide for a document: its default margins
