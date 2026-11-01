@@ -29,6 +29,7 @@ export type {
   TextBoxInit,
 } from "./commands";
 export type { ElementPath } from "./dom";
+export type { WordOverflow } from "./rendering";
 
 // The document and its history.
 export { DEFAULT_PAGE, PAPER_SIZES, createSnapshot, createState, parseSnapshot } from "./model";

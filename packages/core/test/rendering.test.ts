@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { parseHtml, stampPaths, toHtml } from "../src/dom";
 import { DEFAULT_PAGE } from "../src/model";
-import { buildPrintableHtml, contentSecurityPolicy, findBreaks, paginate, type BoxReader } from "../src/rendering";
+import { buildPrintableHtml, contentSecurityPolicy, findBreaks, findOverflows, paginate, type BoxReader, type OverflowReader } from "../src/rendering";
 
 /**
  * A pretend browser: elements are stacked top to bottom. A leaf is as tall as
@@ -139,5 +139,44 @@ describe("printing", () => {
     const csp = contentSecurityPolicy(["https://fonts.example"]);
     expect(csp).toContain("default-src 'none'");
     expect(csp).toContain("font-src data: https://fonts.example");
+  });
+});
+
+describe("words that do not fit their box", () => {
+  // A pretend browser: every character is 10px wide and each element's text may fill `data-w` pixels.
+  const fake: OverflowReader = {
+    limit: (el) => Number(el.closest("[data-w]")!.getAttribute("data-w")),
+    right: (node, _start, end) => end * 10,
+    // A word is broken when the test says so with `data-broken` on its element.
+    broken: (node) => node.parentElement!.hasAttribute("data-broken"),
+  };
+  const overflowsOf = (html: string) => {
+    const root = parseHtml(html);
+    stampPaths(root);
+    return findOverflows(root, fake);
+  };
+
+  it("finds nothing when every word fits", () => {
+    expect(overflowsOf(`<p data-w="200">Skills and languages</p>`)).toEqual([]);
+  });
+
+  it("names a word wider than its column and where it is", () => {
+    expect(overflowsOf(`<div data-w="60"><h2>Hello</h2><p>Språkkunskaper</p></div>`)).toEqual([{ path: [0, 1], word: "Språkkunskaper" }]);
+  });
+
+  it("measures a word from where it ends in a longer text", () => {
+    expect(overflowsOf(`<p data-w="100">one two Språkkunskaper</p>`)).toEqual([{ path: [0], word: "Språkkunskaper" }]);
+  });
+
+  it("finds a word the browser broke across lines, though nothing sticks out", () => {
+    expect(overflowsOf(`<p data-w="200" data-broken>Språkkunskaper</p>`)).toEqual([{ path: [0], word: "Språkkunskaper" }]);
+  });
+
+  it("lets a word that exactly fits stay", () => {
+    expect(overflowsOf(`<p data-w="50">12345</p>`)).toEqual([]);
+  });
+
+  it("reports a repeated word once", () => {
+    expect(overflowsOf(`<p data-w="30">abcdef abcdef</p>`)).toHaveLength(1);
   });
 });

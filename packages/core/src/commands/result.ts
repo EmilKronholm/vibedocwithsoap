@@ -27,9 +27,11 @@ export interface EditError {
 
 /** Something worth telling the person that is not an error. */
 export interface Notice {
-  code: "rules-removed" | "unchanged";
+  code: "rules-removed" | "unchanged" | "word-overflow";
   message: string;
   violations?: RuleViolation[];
+  /** For `word-overflow`: the words that are wider than the column or box they sit in. */
+  overflows?: Array<{ path: ElementPath; word: string }>;
 }
 
 /** Where the caret belongs after a change: inside the element at `path`, `offset` characters in. */

@@ -33,9 +33,15 @@ del[data-vibedoc-rejected] { text-decoration: none; background: none; }
  * the document itself.
  */
 export function installUiStyles(doc: Document): void {
-  if (doc.getElementById(STYLE_ID)) return;
+  const css = BASELINE_CSS + SHEET_CSS + REVIEW_CSS;
+  const existing = doc.getElementById(STYLE_ID);
+  // A page that outlives a reload of this module (hot reload, a newer library) must not keep the old CSS.
+  if (existing) {
+    if (existing.textContent !== css) existing.textContent = css;
+    return;
+  }
   const style = doc.createElement("style");
   style.id = STYLE_ID;
-  style.textContent = BASELINE_CSS + SHEET_CSS + REVIEW_CSS;
+  style.textContent = css;
   doc.head.append(style);
 }

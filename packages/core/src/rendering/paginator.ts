@@ -3,6 +3,7 @@ import { pageGeometry, type PageSetup } from "../model";
 import { DOC_CLASS } from "./baseline-css";
 import { domBoxReader } from "./box-reader";
 import { paginate } from "./paginate";
+import { domOverflowReader, findOverflows, type WordOverflow } from "./overflow";
 
 /** Turns a document into pages for a page setup. */
 export type Paginator = (html: string, page: PageSetup) => Promise<HTMLElement[]>;
@@ -10,18 +11,24 @@ export type Paginator = (html: string, page: PageSetup) => Promise<HTMLElement[]
 // Fonts and images change heights once they load, so measuring waits for them, but not for long.
 const SETTLE_MS = 4000;
 
+export interface PaginatorOptions {
+  /** Told after every layout which words are wider than their box (none, mostly). */
+  onOverflow?: (overflows: WordOverflow[]) => void;
+}
+
 /**
  * A paginator that lays the document out in a hidden element on the page and
  * measures it. This is where the browser's layout engine comes in: where a
  * line wraps decides where a page ends.
  */
-export function browserPaginator(doc: Document = document): Paginator {
+export function browserPaginator(doc: Document = document, options: PaginatorOptions = {}): Paginator {
   return async (html, page) => {
     const geometry = pageGeometry(page);
     const probe = createProbe(doc, geometry.contentWidth, html);
     doc.body.append(probe);
     try {
       await settle(doc, probe);
+      options.onOverflow?.(findOverflows(probe, domOverflowReader()));
       return paginate(probe, geometry.contentHeight, domBoxReader(probe));
     } finally {
       probe.remove();

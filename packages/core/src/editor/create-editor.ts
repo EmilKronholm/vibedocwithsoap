@@ -22,6 +22,10 @@ export interface EditorOptions {
 export function createEditor(options: EditorOptions): Editor {
   const initial = options.snapshot?.state ?? createState({ html: options.html, page: options.page });
   const core = new EditingCore({ initial, versions: options.snapshot?.versions, rules: options.rules });
-  const renderer: RendererFactory = options.renderer ?? ((presentation) => new PagedRenderer(presentation, browserPaginator()));
-  return new Editor(core, options.container, renderer);
+  // Layout is measured after the first await, so the editor exists by the time it reports.
+  let editor: Editor | undefined;
+  const renderer: RendererFactory =
+    options.renderer ?? ((presentation) => new PagedRenderer(presentation, browserPaginator(document, { onOverflow: (found) => editor?.reportOverflows(found) })));
+  editor = new Editor(core, options.container, renderer);
+  return editor;
 }

@@ -4,6 +4,7 @@ import type { ElementPath } from "../dom";
 import type { EditingCore, EditorStatus } from "../editing";
 import { createSnapshot, type Actor, type DocumentSnapshot, type DocumentState, type Version } from "../model";
 import { Autosave, type AutosaveOptions, type DocumentStore } from "../persistence";
+import type { WordOverflow } from "../rendering";
 import type { ReviewSnapshot } from "../review";
 import { InputTranslator, PresentationAdapter, placeCaret, type Presentation } from "../presentation";
 import type { DocumentRules } from "../rules";
@@ -34,6 +35,7 @@ export class Editor {
   #renderTicket = 0;
   /** The render still under way, if the renderer is asynchronous. */
   #rendering: Promise<void> | null = null;
+  #overflows: WordOverflow[] = [];
 
   constructor(core: EditingCore, container: HTMLElement, rendererFactory?: RendererFactory) {
     this.#core = core;
@@ -94,6 +96,32 @@ export class Editor {
   /** The AI revision waiting for the person's decisions, or null. Decide with the review commands. */
   get review(): ReviewSnapshot | null {
     return this.#core.review;
+  }
+
+  /** The words that are wider than their column or box right now, as of the last layout. Empty when everything fits. */
+  get overflows(): readonly WordOverflow[] {
+    return this.#overflows;
+  }
+
+  /**
+   * For renderers: what the last layout found. When the words that stick out
+   * change (and when they are gone, with an empty list), a `word-overflow` notice tells the host, so the person can widen
+   * the column or ask for a new layout instead of finding a broken word later.
+   */
+  reportOverflows(overflows: WordOverflow[]): void {
+    const key = (list: readonly WordOverflow[]) => list.map((o) => `${o.path.join(".")}|${o.word}`).join(",");
+    if (key(overflows) === key(this.#overflows)) return;
+    this.#overflows = overflows;
+    if (overflows.length === 0) {
+      this.#events.emit("notice", { code: "word-overflow", message: "Everything fits its column again.", overflows });
+      return;
+    }
+    const words = overflows.slice(0, 3).map((o) => `"${o.word}"`).join(", ");
+    this.#events.emit("notice", {
+      code: "word-overflow",
+      message: `${words}${overflows.length > 3 ? " and more" : ""} do not fit their column. Widen it or make the text smaller.`,
+      overflows,
+    });
   }
 
   /** The element the person last clicked or typed in. */

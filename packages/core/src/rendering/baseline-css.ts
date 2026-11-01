@@ -20,8 +20,11 @@ export const BASELINE_CSS = `
   text-indent: 0;
   text-transform: none;
   tab-size: 4;
-  overflow-wrap: anywhere;
+  /* Never break a word mid-letter: a column too narrow for a word shows, and is reported, instead of hiding. */
+  overflow-wrap: normal;
+  hyphens: manual;
 }
+:where(.${DOC_CLASS}) :where([contenteditable]) { overflow-wrap: inherit; } /* the browser's own rule for editable text is break-word */
 :where(.${DOC_CLASS}) :where(*) {
   box-sizing: border-box;
   margin: 0;
